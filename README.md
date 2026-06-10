@@ -7,7 +7,7 @@ The repository is intentionally code-only. Raw SEEG recordings, patient-level da
 ## Contents
 
 - `matlab/`: MATLAB scripts copied from the Fig. 2-Fig. 9 code folders under `2_Fig*`.
-- `r_figures/`: R scripts used to redraw and export manuscript figures from `nature_fig/Fig_2` to `nature_fig/Fig_9`.
+- `r_figures/`: the latest R script for each manuscript figure from `nature_fig/Fig_2` to `nature_fig/Fig_9`.
 
 ## Data and Results
 

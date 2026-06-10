@@ -1,0 +1,71 @@
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*.tmp
+*.bak
+*.asv
+
+# MATLAB and R session artifacts
+*.mlx
+*.mlapp
+*.slx
+*.mex*
+*.p
+.Rhistory
+.RData
+.Ruserdata
+renv/library/
+
+# Raw clinical/electrophysiology data
+*.edf
+*.bdf
+*.eeg
+*.set
+*.fdt
+*.vhdr
+*.vmrk
+*.dat
+*.bin
+*.nwb
+
+# Data tables and analysis outputs
+*.mat
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.h5
+*.hdf5
+*.rds
+*.RDS
+*.feather
+*.parquet
+
+# Rendered figures and documents
+*.fig
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.svg
+*.pdf
+*.eps
+*.ai
+*.doc
+*.docx
+*.ppt
+*.pptx
+
+# Common generated output folders
+data/
+raw_data/
+source_data/
+seizure_data/
+results/
+outputs/
+figures/
+exports/

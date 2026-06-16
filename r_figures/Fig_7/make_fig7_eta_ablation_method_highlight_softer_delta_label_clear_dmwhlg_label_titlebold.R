@@ -269,8 +269,7 @@ writeLines(
   c(
     "Fig. 7 method-highlighting note",
     "",
-    "Old versions preserved: Fig7_eta_ablation_components.*, Fig7_eta_ablation_components_aligned_palette.*, Fig7_eta_ablation_components_nc_orangered.*, Fig7_eta_ablation_components_method_highlight.* and Fig7_eta_ablation_components_method_highlight_soft.*",
-    "Softer method-highlighting delta-label-clear DMW-HLG-label version: Fig7_eta_ablation_components_method_highlight_softer_delta_label_clear_dmwhlg_label_titlebold.*",
+    "Final manuscript export: Fig7_eta_ablation_components_method_highlight_softer_delta_label_clear_dmwhlg_label_titlebold.*",
     "Palette: DMW-HLG #D96661, Coverage only #4778A8, Degree-bias only #7A828C.",
     "Rationale: the main method is foregrounded with a softer coral-red accent, while the ablated variants are visually pushed back with blue and gray. Panel-a labels use the same display content as the current Fig. 8 (Delta and P) and are placed in the upper-left whitespace of each facet to avoid overlap with boxplots or whiskers.",
     "Display label: the source-data model named Original is shown as DMW-HLG in the figure to match Fig. 8 terminology; source data and statistics are unchanged from the audited Fig. 7 source tables."

@@ -537,7 +537,7 @@ qa_note <- c(
   "Control-variable note: HR signals are converted to PLV input and then passed through the same DMW-HLG construction used for SEEG; the construction itself is not changed.",
   "Structural-map note: eta, R and lambda1 heatmaps use within-metric min-max scaling for pattern comparison; raw ranges are eta 0.765-0.978, R 3.57-17.0 and lambda1 4.15-18.8.",
   "Fixed-slice note: panel d uses five fixed levels, 0.10, 0.30, 0.50, 0.70 and 0.90, for both h and c; curves show raw metric values rather than normalized values.",
-  "Review-risk note: the pair-edge density is nearly controlled but shows a small high-beta drift, consistent with PLV ties in the quantile-thresholded construction.",
+  "Review-risk note: the pair-edge density is nearly controlled but shows a small high-beta drift, consistent with PLV ties in the seizure-specific elbow-thresholded construction.",
   "Exports: PNG, SVG, PDF and high-resolution TIFF."
 )
 writeLines(qa_note, file.path(out_dir, "Fig9_QA_notes.txt"))

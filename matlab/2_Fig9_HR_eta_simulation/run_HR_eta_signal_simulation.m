@@ -2,7 +2,7 @@
 % This script tests whether epileptiform neural dynamics can induce eta
 % changes when the same SEEG -> DMW-HLG construction used in paper 2 is held
 % fixed. The HR model only generates simulated X1 signals. Hyperedge
-% construction and eta calculation intentionally reuse the native paper-2
+% construction and eta calculation reuse the native paper-2
 % functions:
 %   gain_hyperEdges_23.m
 %   build_W_from_hyperedges.m

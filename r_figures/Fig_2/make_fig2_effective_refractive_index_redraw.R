@@ -251,12 +251,12 @@ p_c <- ggplot(delta_long, aes(delta_eta, phase_label, fill = phase5)) +
 
 mat_dir <- file.path(base_dir, "seizure_data")
 mat_files <- list.files(mat_dir, pattern = "\\.mat$", full.names = TRUE)
-exclude_files <- c("example_excluded_state_01", "example_excluded_state_02",
-                   "example_excluded_state_03", "example_excluded_state_04")
+skip_files <- c("example_state_skip_01", "example_state_skip_02",
+                "example_state_skip_03", "example_state_skip_04")
 
 read_stage_mat <- function(path) {
   name <- tools::file_path_sans_ext(basename(path))
-  if (name %in% exclude_files) return(NULL)
+  if (name %in% skip_files) return(NULL)
   obj <- readMat(path)
   pid <- strsplit(name, "_", fixed = TRUE)[[1]][1]
   pre <- as.numeric(obj[["stage.pre"]][1, ])

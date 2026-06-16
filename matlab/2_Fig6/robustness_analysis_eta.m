@@ -1,7 +1,7 @@
 clc; clear; close all;
 
-%% ===================== 用户设置 =====================
-rootDir = 'example_project\2_Fig6';   % 改成你的数据根目录
+%% User settings
+rootDir = 'example_project\2_Fig6';
 outDir  = fullfile(rootDir, 'robustness_out_eta');
 if ~exist(outDir, 'dir')
     mkdir(outDir);
@@ -13,23 +13,22 @@ stepSec = 1;
 windowSecList = 1:5;
 retainedFractionList = 0.45:0.05:0.90;
 
-defaultWindowSec   = 3;
+defaultWindowSec = 3;
 defaultRetainedFraction = 0.55;
 
-%% ===================== 24次发作信息 =====================
+%% Seizure information
 seizures = get_seizure_info(rootDir);
 
 if isempty(seizures)
-    error('get_seizure_info.m 里没有填入发作信息。');
+    error('No seizure information was returned by get_seizure_info.m.');
 end
 
-%% ===================== 主循环 =====================
+%% Main robustness loop
 allSummary = struct([]);
 cnt = 0;
 
 for iw = 1:numel(windowSecList)
     for iq = 1:numel(retainedFractionList)
-
         windowSec = windowSecList(iw);
         retainedFraction = retainedFractionList(iq);
 
@@ -52,26 +51,26 @@ for iw = 1:numel(windowSecList)
         summary = summarize_robustness_results_eta(seizureResults, windowSec, retainedFraction);
 
         cnt = cnt + 1;
-        allSummary(cnt).windowSec         = windowSec;
-        allSummary(cnt).retainedFraction  = retainedFraction;
-        allSummary(cnt).nSeizures         = summary.nSeizures;
-        allSummary(cnt).preMean           = summary.preMean;
-        allSummary(cnt).earlyMean         = summary.earlyMean;
-        allSummary(cnt).midMean           = summary.midMean;
-        allSummary(cnt).lateMean          = summary.lateMean;
-        allSummary(cnt).postMean          = summary.postMean;
-        allSummary(cnt).ictalMean         = summary.ictalMean;
-        allSummary(cnt).trendKeepRate     = summary.trendKeepRate;
-        allSummary(cnt).p_pre_vs_ictal    = summary.p_pre_vs_ictal;
-        allSummary(cnt).dz_pre_vs_ictal   = summary.dz_pre_vs_ictal;
-        allSummary(cnt).nValidPairs       = summary.nValidPairs;
+        allSummary(cnt).windowSec        = windowSec;
+        allSummary(cnt).retainedFraction = retainedFraction;
+        allSummary(cnt).nSeizures        = summary.nSeizures;
+        allSummary(cnt).preMean          = summary.preMean;
+        allSummary(cnt).earlyMean        = summary.earlyMean;
+        allSummary(cnt).midMean          = summary.midMean;
+        allSummary(cnt).lateMean         = summary.lateMean;
+        allSummary(cnt).postMean         = summary.postMean;
+        allSummary(cnt).ictalMean        = summary.ictalMean;
+        allSummary(cnt).trendKeepRate    = summary.trendKeepRate;
+        allSummary(cnt).p_pre_vs_ictal   = summary.p_pre_vs_ictal;
+        allSummary(cnt).dz_pre_vs_ictal  = summary.dz_pre_vs_ictal;
+        allSummary(cnt).nValidPairs      = summary.nValidPairs;
 
         save(fullfile(outDir, sprintf('detail_eta_win%.1f_retained%.2f.mat', windowSec, retainedFraction)), ...
             'seizureResults', 'summary');
     end
 end
 
-%% ===================== 保存汇总 =====================
+%% Save summary
 SummaryTable = struct2table(allSummary);
 writetable(SummaryTable, fullfile(outDir, 'robustness_summary_eta.csv'));
 
@@ -80,7 +79,7 @@ save(fullfile(outDir, 'robustness_summary_eta.mat'), ...
     'windowSecList', 'retainedFractionList', ...
     'defaultWindowSec', 'defaultRetainedFraction');
 
-%% ===================== 画图 =====================
+%% Plot
 plot_robustness_heatmap_eta(allSummary, windowSecList, retainedFractionList, ...
     defaultWindowSec, defaultRetainedFraction, outDir);
 

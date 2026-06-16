@@ -418,7 +418,7 @@ p_d <- ggplot(loo_tbl, aes(x = reorder(patient_id, mean_delta_leave_one_out), y 
   scale_y_continuous(labels = number_format(accuracy = 0.001), expand = expansion(mult = c(0.10, 0.22))) +
   labs(
     title = "Leave-one-patient-out sensitivity",
-    x = "Patient omitted",
+    x = "Patient left out",
     y = "Mean <i>Δη</i> (Ictal-Pre)"
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))

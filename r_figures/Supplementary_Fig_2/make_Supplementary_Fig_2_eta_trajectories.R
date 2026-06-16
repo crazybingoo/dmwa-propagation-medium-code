@@ -13,6 +13,7 @@ suppressPackageStartupMessages({
 FIG_TEXT_PT <- 10.5
 FIG_PANEL_PT <- 12.5
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
+eta_italic_sym <- "\U0001D702"
 
 base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Supplementary_Fig_2")
 if (length(base_candidates) < 1) {
@@ -172,7 +173,7 @@ trajectory_plot <- ggplot(plot_df, aes(x = rel_window, y = eta)) +
   coord_cartesian(ylim = eta_limits, clip = "on") +
   labs(
     x = "Normalized window position (%)",
-    y = expression(italic(eta))
+    y = eta_italic_sym
   ) +
   guides(colour = guide_legend(override.aes = list(linewidth = 1.1, alpha = 1), nrow = 1)) +
   theme(
@@ -218,7 +219,7 @@ qa_text <- c(
   "Backend: R only (ggplot2 + svglite/cairo_pdf/ragg).",
   sprintf("Source rows: %d window-level observations; %d seizure-stage rows.", nrow(window_raw), nrow(stage_raw)),
   sprintf("Eta range displayed: %.4f to %.4f; observed range: %.4f to %.4f.", eta_limits[1], eta_limits[2], eta_range[1], eta_range[2]),
-  "Visual checks to perform: facet labels readable, eta symbol italic, phase legend clear, no line/legend overlap."
+  "Visual checks to perform: facet labels readable, eta symbol uses mathematical italic styling, phase legend clear, no line/legend overlap."
 )
 writeLines(qa_text, file.path(base_dir, "Supplementary_Fig_2_QA_notes.txt"), useBytes = TRUE)
 

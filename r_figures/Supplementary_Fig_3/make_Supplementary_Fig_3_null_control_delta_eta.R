@@ -13,6 +13,9 @@ suppressPackageStartupMessages({
 FIG_TEXT_PT <- 10.5
 FIG_PANEL_PT <- 12.5
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
+eta_italic_sym <- "\U0001D702"
+delta_upper_italic_sym <- "\U0001D6E5"
+delta_eta_italic_sym <- paste0(delta_upper_italic_sym, eta_italic_sym)
 
 base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Supplementary_Fig_3")
 if (length(base_candidates) < 1) {
@@ -315,7 +318,7 @@ make_control_panel <- function(ctrl_label, show_y = FALSE) {
     labs(
       title = as.character(ctrl_label),
       x = NULL,
-      y = if (show_y) expression(Delta * italic(eta) * " relative to pre-ictal") else NULL
+      y = if (show_y) paste0(delta_eta_italic_sym, " relative to pre-ictal") else NULL
     ) +
     guides(fill = "none", colour = "none") +
     theme(
@@ -393,7 +396,7 @@ qa_text <- c(
   "Evidence chain: each facet compares the original DMWA distribution with one control model across early, mid, late and post-ictal phases.",
   "Source data: MATLAB-derived Supplementary_Fig_3_delta_eta_source.csv; delta_eta = eta_mean(phase) - eta_mean(pre-ictal), paired within case and model.",
   "Statistics: two-sided Wilcoxon signed-rank tests comparing original versus control delta_eta within seizures; Holm correction within each control family.",
-  "Visual QA checklist: panel titles are bold; delta eta axis uses italic eta; zero line visible; legend does not overlap data; dots, boxes and mean diamonds are visible."
+  "Visual QA checklist: panel titles are bold; delta eta axis uses mathematical italic styling; zero line visible; legend does not overlap data; dots, boxes and mean diamonds are visible."
 )
 writeLines(qa_text, file.path(base_dir, "Supplementary_Fig_3_QA_notes.txt"), useBytes = TRUE)
 }

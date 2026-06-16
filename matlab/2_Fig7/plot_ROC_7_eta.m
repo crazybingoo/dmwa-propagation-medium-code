@@ -4,7 +4,7 @@
 % =========================================================
 clc; clear; close all;
 
-dataDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig7';
+dataDir = 'example_project\2_Fig7';
 dataFile = fullfile(dataDir, 'ALL_CASES_stage5_eta_ablation.csv');
 
 if ~exist(dataFile, 'file')

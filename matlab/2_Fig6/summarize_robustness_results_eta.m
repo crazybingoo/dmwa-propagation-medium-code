@@ -1,4 +1,4 @@
-function summary = summarize_robustness_results_eta(seizureResults, windowSec, plvQuantile)
+function summary = summarize_robustness_results_eta(seizureResults, windowSec, retainedFraction)
 
 n = numel(seizureResults);
 
@@ -40,7 +40,7 @@ else
 end
 
 summary.windowSec       = windowSec;
-summary.plvQuantile     = plvQuantile;
+summary.retainedFraction = retainedFraction;
 summary.nSeizures       = n;
 
 summary.preMean         = mean(preVals, 'omitnan');

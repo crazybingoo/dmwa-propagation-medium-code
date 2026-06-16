@@ -20,7 +20,7 @@
 clc; clear; close all;
 
 %% 1) 路径设置
-resultsDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig4';
+resultsDir = 'example_project\2_Fig4';
 
 % 如果当前机器没有该路径，则默认从当前工作目录读取，方便拷贝到结果文件夹后直接运行
 if ~isfolder(resultsDir)

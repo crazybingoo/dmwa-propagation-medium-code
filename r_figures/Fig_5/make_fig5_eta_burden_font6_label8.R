@@ -27,10 +27,10 @@ region_order <- c("SOZ", "PZ", "NIZ")
 macro_order <- c("SOZ_only", "PZ_only", "NIZ_only", "SOZ_PZ", "SOZ_NIZ", "PZ_NIZ", "SOZ_PZ_NIZ")
 role_order <- c("source-like", "balanced", "sink-like")
 
-input_dir <- "E:/wcldematlab/keep/new_idea/8 - n_u_v/2_Fig5_size_adjusted"
-out_dir_candidates <- Sys.glob(file.path("F:/6", "*0514-", "nature_fig", "Fig_5"))
+input_dir <- file.path("data", "Fig_5_size_adjusted")
+out_dir_candidates <- Sys.glob(file.path("example_project", "*0514-", "nature_fig", "Fig_5"))
 if (length(out_dir_candidates) < 1) {
-  stop("Cannot locate Fig_5 directory under F:/6/*0514-/nature_fig")
+  stop("Cannot locate Fig_5 directory under example_project/*0514-/nature_fig")
 }
 out_dir <- normalizePath(out_dir_candidates[1], winslash = "/", mustWork = TRUE)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)

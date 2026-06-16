@@ -20,7 +20,7 @@
 clc; clear; close all;
 
 %% 0) 路径与开关
-outDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig9_eta_mechanism';
+outDir = 'example_project\2_Fig9_eta_mechanism';
 if ~exist(outDir, 'dir')
     mkdir(outDir);
 end

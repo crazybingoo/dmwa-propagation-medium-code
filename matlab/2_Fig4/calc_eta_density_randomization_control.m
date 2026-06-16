@@ -51,8 +51,8 @@ clc; clear; close all;
 % =========================================================
 
 %% 1) 路径设置
-inputDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig3';
-outDir   = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig4';
+inputDir = 'example_project\2_Fig3';
+outDir   = 'example_project\2_Fig4';
 
 if ~exist(outDir, 'dir')
     mkdir(outDir);

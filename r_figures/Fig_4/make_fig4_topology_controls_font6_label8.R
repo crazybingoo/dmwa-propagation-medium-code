@@ -16,9 +16,9 @@ FIG_PANEL_PT <- 8
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 
 
-base_candidates <- Sys.glob("F:/6/*0514-/nature_fig/Fig_4")
+base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Fig_4")
 if (length(base_candidates) < 1) {
-  stop("Cannot locate Fig_4 directory under F:/6/*0514-/nature_fig/Fig_4")
+  stop("Cannot locate Fig_4 directory under example_project/*0514-/nature_fig/Fig_4")
 }
 base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
 out_base <- file.path(base_dir, "Fig4_topology_controls_font6_label8")

@@ -20,7 +20,7 @@ clc; clear; close all;
 % =========================================================
 
 %% 1) 路径设置
-resultDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig3';
+resultDir = 'example_project\2_Fig3';
 
 stageFile = fullfile(resultDir, 'ALL_CASES_stage5_eta_decomposition.csv');
 statFile  = fullfile(resultDir, 'GROUP_eta_decomposition_all_stats.csv');

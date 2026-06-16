@@ -18,3 +18,7 @@ The following file types are excluded from version control by design: MATLAB dat
 ## Notes
 
 Some scripts may contain local file paths from the analysis workstation. These paths should be adapted to the local data-access environment before use.
+
+For the main empirical DMWA construction, the MATLAB scripts select one PLV threshold per seizure from the elbow of the density-threshold curve and apply that threshold to all windows from the same seizure. The Fig. 6 robustness scripts intentionally override this with a 50-setting grid spanning window lengths from 1 to 5 s and retained PLV edge fractions from 0.45 to 0.90.
+
+All paths in the public scripts are example paths. Raw data, intermediate result tables, rendered figures and manuscript files are intentionally excluded from the repository.

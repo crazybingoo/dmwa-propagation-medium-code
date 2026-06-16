@@ -12,8 +12,8 @@ suppressPackageStartupMessages({
   library(tibble)
 })
 
-source_dir <- file.path("E:/wcldematlab/keep/new_idea", "8 - n_u_v", "2_Fig8")
-out_dir <- file.path("F:/6", "\u521d\u7a3f0514-", "nature_fig", "Fig_8")
+source_dir <- file.path("data", "Fig_8")
+out_dir <- file.path("figures", "Fig_8")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 stage_file <- file.path(source_dir, "ALL_CASES_stage5_eta_Comparison.csv")

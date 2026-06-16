@@ -27,7 +27,7 @@ clc; clear; close all;
 
 %% 0) 路径设置
 % 改成你的结果目录。按你截图中的目录默认填写：
-resultDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig1';
+resultDir = 'example_project\2_Fig1';
 inFile    = fullfile(resultDir, 'ALL_CASES_stage5_eta.csv');
 
 if ~exist(inFile, 'file')

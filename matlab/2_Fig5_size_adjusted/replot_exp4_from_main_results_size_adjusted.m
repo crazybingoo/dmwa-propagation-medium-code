@@ -14,7 +14,7 @@
 clc; clear; close all;
 
 %% 1) 路径
-outDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig5_size_adjusted';
+outDir = 'example_project\2_Fig5_size_adjusted';
 
 resultMat = fullfile(outDir, 'ALL_CASES_exp4_region_hyperedge_contribution_results_size_adjusted.mat');
 if ~exist(resultMat, 'file')

@@ -17,9 +17,9 @@ FIG_PANEL_PT <- 8
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 
 
-base_candidates <- Sys.glob("F:/6/*0514-/nature_fig/Fig_3")
+base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Fig_3")
 if (length(base_candidates) < 1) {
-  stop("Cannot locate Fig_3 directory under F:/6/*0514-/nature_fig/Fig_3")
+  stop("Cannot locate Fig_3 directory under example_project/*0514-/nature_fig/Fig_3")
 }
 base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
 out_base <- file.path(base_dir, "Fig3_eta_decomposition_font6_label8")

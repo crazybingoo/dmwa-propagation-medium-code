@@ -1,7 +1,7 @@
 clc; clear; close all;
 
 %% 1. 数据准备 (保持不变)
-resultDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig1'; 
+resultDir = 'example_project\2_Fig1';
 inFile    = fullfile(resultDir, 'ALL_CASES_stage5_eta.csv');
 
 T = readtable(inFile);

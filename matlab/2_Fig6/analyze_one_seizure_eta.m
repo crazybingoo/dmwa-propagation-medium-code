@@ -1,4 +1,4 @@
-function result = analyze_one_seizure_eta(seizure, fs, windowSec, stepSec, plvQuantile)
+function result = analyze_one_seizure_eta(seizure, fs, windowSec, stepSec, retainedFraction)
 
 dataFile = seizure.file;
 if ~isfile(dataFile)
@@ -47,7 +47,7 @@ for i = 1:nWin
 
     datanew = X1(:, s1:s2);
 
-    HE = gain_hyperEdges_23_robust(datanew, plvQuantile);
+    HE = gain_hyperEdges_23_robust(datanew, retainedFraction);
     numHE_all(i) = numel(HE);
 
     W = build_W_from_hyperedges(HE);
@@ -67,7 +67,7 @@ result.id                  = seizure.id;
 result.file                = seizure.file;
 result.windowSec           = windowSec;
 result.stepSec             = stepSec;
-result.plvQuantile         = plvQuantile;
+result.retainedFraction    = retainedFraction;
 result.eta_all             = eta_all;
 result.centerSec           = centerSec;
 result.stageCode           = stageCode;

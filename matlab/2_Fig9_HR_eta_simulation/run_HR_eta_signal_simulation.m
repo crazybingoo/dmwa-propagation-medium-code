@@ -11,14 +11,16 @@
 clc; clear; close all;
 
 %% Paths
-rootDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v';
+rootDir = 'example_data\8 - n_u_v';
 outDir  = fullfile(rootDir, '2_Fig9_HR_eta_simulation');
 if ~exist(outDir, 'dir'), mkdir(outDir); end
 
 addpath(fullfile(rootDir, '2'));
 addpath(fullfile(rootDir, '2_Fig6'));
+addpath(outDir);
 
-requiredFunctions = {'gain_hyperEdges_23', 'build_W_from_hyperedges', 'compute_eta_from_W'};
+requiredFunctions = {'gain_hyperEdges_23', 'select_seizure_plv_elbow_threshold', ...
+    'build_W_from_hyperedges', 'compute_eta_from_W'};
 for i = 1:numel(requiredFunctions)
     if exist(requiredFunctions{i}, 'file') ~= 2
         error('Required paper-2 function not found on path: %s', requiredFunctions{i});
@@ -95,6 +97,8 @@ for trial = 1:params.numTrials
         nSamples = size(X1, 2);
         startIdx = 1:params.stepSamples:(nSamples - params.winSamples + 1);
         nWin = numel(startIdx);
+        plvThreshold = select_seizure_plv_elbow_threshold( ...
+            X1, params.analysisFs, params.winLenSec, 0:(nWin - 1));
 
         etaVals      = nan(nWin, 1);
         avgWVals     = nan(nWin, 1);
@@ -114,7 +118,7 @@ for trial = 1:params.numTrials
             datanew = X1(:, idx1:idx2);
 
             % Native paper-2 signal-to-hyperedge step.
-            HE = gain_hyperEdges_23(datanew);
+            HE = gain_hyperEdges_23(datanew, plvThreshold);
 
             % Native paper-2 hyperedge-to-DMWA and eta steps.
             W = build_W_from_hyperedges(HE);
@@ -149,7 +153,7 @@ for trial = 1:params.numTrials
                 ((idx1 - 1) + (idx2 - 1)) / 2 / params.analysisFs, ...
                 etaNative, avgW, lambda1, diag.pairDensity, meanPlv, ...
                 diag.numHE, diag.numHE2, diag.numHE3, diag.meanSize, ...
-                diag.coreParticipation, diag.coreNodeFraction};
+                diag.coreParticipation, diag.coreNodeFraction, plvThreshold};
         end
 
         summaryCount = summaryCount + 1;
@@ -158,7 +162,7 @@ for trial = 1:params.numTrials
             mean(pairDensVals, 'omitnan'), mean(meanPlvVals, 'omitnan'), ...
             mean(heVals, 'omitnan'), mean(he2Vals, 'omitnan'), mean(he3Vals, 'omitnan'), ...
             mean(meanSizeVals, 'omitnan'), mean(corePartVals, 'omitnan'), ...
-            mean(coreFracVals, 'omitnan'), nWin};
+            mean(coreFracVals, 'omitnan'), plvThreshold, nWin};
 
         fprintf('trial %02d/%02d | beta %.2f | windows %d | eta %.4f | R %.4f | lambda1 %.4f | pair density %.3f | nHE %.1f\n', ...
             trial, params.numTrials, beta, nWin, ...
@@ -175,13 +179,14 @@ WindowTable = cell2table(vertcat(rows{:}), 'VariableNames', { ...
     'trial', 'beta', 'window_idx', 'center_time', ...
     'eta', 'avgW', 'lambda1', 'pair_density', 'mean_plv', ...
     'num_hyperedges', 'num_HE2', 'num_HE3', 'mean_hyperedge_size', ...
-    'core_participation', 'core_node_fraction'});
+    'core_participation', 'core_node_fraction', 'plv_elbow_threshold'});
 
 TrialTable = cell2table(vertcat(trialSummary{:}), 'VariableNames', { ...
     'trial', 'beta', 'eta_mean', 'avgW_mean', 'lambda1_mean', ...
     'pair_density_mean', 'mean_plv_mean', 'num_hyperedges_mean', ...
     'num_HE2_mean', 'num_HE3_mean', 'mean_hyperedge_size_mean', ...
-    'core_participation_mean', 'core_node_fraction_mean', 'n_windows'});
+    'core_participation_mean', 'core_node_fraction_mean', ...
+    'plv_elbow_threshold', 'n_windows'});
 
 BetaSummary = summarize_by_beta(TrialTable);
 StatsTable = trend_stats(TrialTable);

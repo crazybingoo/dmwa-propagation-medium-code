@@ -5,7 +5,7 @@
 clc; clear; close all;
 
 %% 1. 路径与数据加载
-dataDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig8';
+dataDir = 'example_project\2_Fig8';
 dataFile = fullfile(dataDir, 'ALL_CASES_stage5_eta_Comparison.csv');
 
 if ~exist(dataFile, 'file')

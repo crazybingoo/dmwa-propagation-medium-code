@@ -4,7 +4,7 @@
 clc; clear; close all;
 
 %% 1. 路径设置与数据加载
-dataDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig8';
+dataDir = 'example_project\2_Fig8';
 varFile = fullfile(dataDir, 'Stats_Variance_Comparison_eta.csv');
 
 if ~exist(varFile, 'file')

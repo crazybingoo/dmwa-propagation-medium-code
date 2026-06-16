@@ -1,8 +1,8 @@
-function plot_robustness_heatmap_eta(allSummary, windowSecList, plvQuantileList, ...
-    defaultWindowSec, defaultPlvQuantile, outDir)
+function plot_robustness_heatmap_eta(allSummary, windowSecList, retainedFractionList, ...
+    defaultWindowSec, defaultRetainedFraction, outDir)
 
 nW = numel(windowSecList);
-nQ = numel(plvQuantileList);
+nQ = numel(retainedFractionList);
 
 DZ    = nan(nW, nQ);
 PVAL  = nan(nW, nQ);
@@ -16,10 +16,10 @@ POST  = nan(nW, nQ);
 
 for i = 1:numel(allSummary)
     w = allSummary(i).windowSec;
-    q = allSummary(i).plvQuantile;
+    q = allSummary(i).retainedFraction;
 
     iw = find(abs(windowSecList - w) < 1e-12, 1);
-    iq = find(abs(plvQuantileList - q) < 1e-12, 1);
+    iq = find(abs(retainedFractionList - q) < 1e-12, 1);
 
     DZ(iw, iq)    = allSummary(i).dz_pre_vs_ictal;
     PVAL(iw, iq)  = allSummary(i).p_pre_vs_ictal;
@@ -33,7 +33,7 @@ for i = 1:numel(allSummary)
 end
 
 iw0 = find(abs(windowSecList - defaultWindowSec) < 1e-12, 1);
-iq0 = find(abs(plvQuantileList - defaultPlvQuantile) < 1e-12, 1);
+iq0 = find(abs(retainedFractionList - defaultRetainedFraction) < 1e-12, 1);
 
 baseDZ = DZ(iw0, iq0);
 
@@ -62,12 +62,12 @@ cmap = parula(256);
 colormap(ax1, cmap);
 caxis(ax1, [0.4 1.1]);
 
-set(ax1, 'XTick', 1:nQ, 'XTickLabel', compose('%.2f', plvQuantileList), ...
+set(ax1, 'XTick', 1:nQ, 'XTickLabel', compose('%.2f', retainedFractionList), ...
     'YTick', 1:nW, 'YTickLabel', compose('%.0f', windowSecList), ...
     'FontName', fontName, 'FontSize', fontSizeA, 'LineWidth', 0.8, ...
     'TickDir', 'out', 'Box', 'off');
 
-xlabel(ax1, 'PLV quantile threshold', 'FontName', fontName, 'FontSize', fontSizeA);
+xlabel(ax1, 'Retained PLV edge fraction', 'FontName', fontName, 'FontSize', fontSizeA);
 ylabel(ax1, 'Window length (s)', 'FontName', fontName, 'FontSize', fontSizeA);
 title(ax1, 'Robustness of \eta across parameter settings', ...
     'FontName', fontName, 'FontSize', fontSizeA + 1, 'FontWeight', 'normal');
@@ -168,8 +168,8 @@ set(ax2, 'XLim', [0.7 5.3], ...
     'LineWidth', 0.8, 'TickDir', 'out', 'Box', 'off');
 
 ylabel(ax2, 'Mean \eta', 'FontName', fontName, 'FontSize', fontSizeA);
-title(ax2, sprintf('Representative stage profile (%.0f s, q = %.2f)', ...
-    defaultWindowSec, defaultPlvQuantile), ...
+title(ax2, sprintf('Representative stage profile (%.0f s, retained = %.2f)', ...
+    defaultWindowSec, defaultRetainedFraction), ...
     'FontName', fontName, 'FontSize', fontSizeA + 1, 'FontWeight', 'normal');
 
 ymin = min(repTrend) - 0.03;
@@ -190,8 +190,8 @@ else
     pTxt0 = sprintf('p = %.3f', PVAL(iw0, iq0));
 end
 
-txtInfo = sprintf('default: %.0f s, q = %.2f\ndz = %.2f\ntrend = %d%%\n%s', ...
-    defaultWindowSec, defaultPlvQuantile, DZ(iw0, iq0), round(TREND(iw0, iq0)*100), pTxt0);
+txtInfo = sprintf('default: %.0f s, retained = %.2f\ndz = %.2f\ntrend = %d%%\n%s', ...
+    defaultWindowSec, defaultRetainedFraction, DZ(iw0, iq0), round(TREND(iw0, iq0)*100), pTxt0);
 
 text(ax2, 0.98, 0.05, txtInfo, ...
     'Units', 'normalized', ...

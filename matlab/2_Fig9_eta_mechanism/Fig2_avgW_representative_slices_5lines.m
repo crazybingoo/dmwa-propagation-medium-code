@@ -5,7 +5,7 @@
 
 clc; clear; close all;
 
-outDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\1_Fig9_eta_mechanism';
+outDir = 'example_project\1_Fig9_eta_mechanism';
 cacheFile = fullfile(outDir, 'eta_phase_mechanism_data.mat');
 
 if ~exist(cacheFile, 'file')

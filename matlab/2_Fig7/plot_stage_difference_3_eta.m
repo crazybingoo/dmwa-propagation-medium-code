@@ -1,6 +1,6 @@
 clc; clear; close all;
 
-workDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig7';
+workDir = 'example_project\2_Fig7';
 csvFile = fullfile(workDir, 'ALL_CASES_stage5_eta_ablation.csv');
 
 if ~exist(csvFile, 'file')

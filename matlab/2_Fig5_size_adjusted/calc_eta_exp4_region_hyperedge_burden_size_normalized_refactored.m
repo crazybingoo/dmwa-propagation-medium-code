@@ -52,8 +52,8 @@
 clc; clear; close all;
 
 %% 1) 路径设置
-inDir  = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig1';
-outDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig5_size_adjusted';
+inDir  = 'example_project\2_Fig1';
+outDir = 'example_project\2_Fig5_size_adjusted';
 
 if ~exist(outDir, 'dir')
     mkdir(outDir);
@@ -374,39 +374,39 @@ function regionMap = build_embedded_region_map()
     gwh = [1;3;1;3;2;3;2;3;3;3;2;3;3;3;3;3];
 
     % 同一病人多次发作使用同一套区域映射
-    regionMap('lhs_cut07') = lhs;
-    regionMap('lhs_cut06') = lhs;
+    regionMap('seizure_01') = lhs;
+    regionMap('seizure_02') = lhs;
 
-    regionMap('gzs_cut06') = gzs;
-    regionMap('gzs_cut07') = gzs;
-    regionMap('gzs_cut08') = gzs;
+    regionMap('seizure_03') = gzs;
+    regionMap('seizure_04') = gzs;
+    regionMap('seizure_05') = gzs;
 
-    regionMap('wc_cut03') = wc;
-    regionMap('wc_cut06') = wc;
-    regionMap('wc_cut08') = wc;
+    regionMap('seizure_06') = wc;
+    regionMap('seizure_07') = wc;
+    regionMap('seizure_08') = wc;
 
-    regionMap('cxm_cut104') = cxm;
-    regionMap('bsp_cut84')  = bsp;
+    regionMap('seizure_09') = cxm;
+    regionMap('seizure_10')  = bsp;
 
-    regionMap('zzy_cut151') = zzy;
-    regionMap('zzy_cut147') = zzy;
+    regionMap('seizure_11') = zzy;
+    regionMap('seizure_12') = zzy;
 
-    regionMap('lzq_cut73') = lzq;
-    regionMap('lzq_cut77') = lzq;
+    regionMap('seizure_13') = lzq;
+    regionMap('seizure_14') = lzq;
 
-    regionMap('ll_process')  = ll;
-    regionMap('gzw_cut29')   = gzw;
-    regionMap('hds_process') = hds;
+    regionMap('seizure_15')  = ll;
+    regionMap('seizure_16')   = gzw;
+    regionMap('seizure_17') = hds;
 
-    regionMap('ssh_cut109') = ssh;
-    regionMap('ssh_cut110') = ssh;
-    regionMap('ssh_cut111') = ssh;
+    regionMap('seizure_18') = ssh;
+    regionMap('seizure_19') = ssh;
+    regionMap('seizure_20') = ssh;
 
-    regionMap('fys_cut93') = fys;
-    regionMap('fys_cut99') = fys;
+    regionMap('seizure_21') = fys;
+    regionMap('seizure_22') = fys;
 
-    regionMap('gs_cut58')   = gs;
-    regionMap('gwh_cut104') = gwh;
+    regionMap('seizure_23')   = gs;
+    regionMap('seizure_24') = gwh;
 end
 
 function tf = isfield_multi(S, names)

@@ -11,7 +11,7 @@ suppressPackageStartupMessages({
   library(tibble)
 })
 
-out_dir <- file.path("F:/6", "\u521d\u7a3f0514-", "nature_fig", "Fig_7")
+out_dir <- file.path("figures", "Fig_7")
 
 needed <- c(
   "Fig7_stage_source_data.csv",

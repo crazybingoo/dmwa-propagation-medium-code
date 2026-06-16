@@ -16,9 +16,9 @@ FIG_TEXT_PT <- 6.2
 FIG_PANEL_PT <- 8.0
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 
-base_candidates <- Sys.glob("F:/6/*0514-/nature_fig/Fig_2")
+base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Fig_2")
 if (length(base_candidates) < 1) {
-  stop("Cannot locate Fig_2 directory under F:/6/*0514-/nature_fig/Fig_2")
+  stop("Cannot locate Fig_2 directory under example_project/*0514-/nature_fig/Fig_2")
 }
 base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
 out_base <- file.path(base_dir, "Fig2_effective_refractive_index_increases_redraw")
@@ -91,7 +91,7 @@ eta_stage <- read_csv(file.path(base_dir, "ALL_CASES_stage5_eta.csv"), show_col_
     phase_label = factor(phase_labels[as.integer(phase5)], levels = phase_labels)
   )
 
-eta_window <- read_csv(file.path(base_dir, "lhs_cut07_window_level_eta.csv"), show_col_types = FALSE) %>%
+eta_window <- read_csv(file.path(base_dir, "seizure_01_window_level_eta.csv"), show_col_types = FALSE) %>%
   mutate(
     phase5 = factor(phase5, levels = phase_levels),
     phase_label = factor(phase_labels[as.integer(phase5)], levels = phase_labels)
@@ -251,7 +251,8 @@ p_c <- ggplot(delta_long, aes(delta_eta, phase_label, fill = phase5)) +
 
 mat_dir <- file.path(base_dir, "seizure_data")
 mat_files <- list.files(mat_dir, pattern = "\\.mat$", full.names = TRUE)
-exclude_files <- c("gwh_s2", "ssh_s3", "ssh_s5", "ssh_s6")
+exclude_files <- c("example_excluded_state_01", "example_excluded_state_02",
+                   "example_excluded_state_03", "example_excluded_state_04")
 
 read_stage_mat <- function(path) {
   name <- tools::file_path_sans_ext(basename(path))

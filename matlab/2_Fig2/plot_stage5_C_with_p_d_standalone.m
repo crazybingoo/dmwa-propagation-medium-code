@@ -14,7 +14,7 @@ clc; clear; close all;
 %% =========================================================
 
 %% 0) 路径设置
-resultDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig2';
+resultDir = 'example_project\2_Fig2';
 inFile    = fullfile(resultDir, 'ALL_CASES_stage5_C.csv');
 
 if ~exist(inFile, 'file')

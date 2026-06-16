@@ -1,15 +1,7 @@
-function all_hyperEdges = gain_hyperEdges_23_robust(datanew, plvQuantile)
-
-if nargin < 2 || isempty(plvQuantile)
-    plvQuantile = 0.55;
-end
-
-% =========================================================
-% 说明：
-% 1) 这里给的是一个可运行的“占位框架”
-% 2) 你最稳的做法是：把你原 gain_hyperEdges_23.m 的主体完整粘到这里
-% 3) 然后仅把“固定 0.55 阈值”那一行替换成 plvQuantile 版本
-% =========================================================
+function all_hyperEdges = gain_hyperEdges_23_robust(datanew, retainedFraction)
+% Extract hyperedges from PLV. Manuscript main scripts select and pass one
+% seizure-level elbow threshold. If a numeric value is supplied here, it is
+% used as the retained PLV edge fraction required by the Fig. 6 robustness grid.
 
 % -------------------- Step 1: 计算 PLV --------------------
 nCh = size(datanew, 1);
@@ -28,7 +20,7 @@ for i = 1:nCh
     end
 end
 
-% -------------------- Step 2: 分位数阈值 --------------------
+% -------------------- Step 2: threshold --------------------
 PLV_U = triu(PLV, 1);
 plv_vals = PLV_U(PLV_U > 0);
 
@@ -37,11 +29,15 @@ if isempty(plv_vals)
     return;
 end
 
-plv_vals = sort(plv_vals, 'ascend');
-n = numel(plv_vals);
-idx = round(n * plvQuantile);
-idx = max(1, min(n, idx));
-thr = plv_vals(idx);
+if nargin < 2 || isempty(retainedFraction)
+    thr = select_plv_elbow_threshold_local(plv_vals);
+else
+    plv_vals = sort(plv_vals, 'descend');
+    n = numel(plv_vals);
+    idx = round(n * retainedFraction);
+    idx = max(1, min(n, idx));
+    thr = plv_vals(idx);
+end
 
 A = double(PLV >= thr);
 A(1:nCh+1:end) = 0;
@@ -52,7 +48,6 @@ A(1:nCh+1:end) = 0;
 % 如果你原 gain_hyperEdges_23.m 有自己的超边提取逻辑，
 % 强烈建议直接用你原来的逻辑替换本部分。
 
-G = graph(A);
 cliques = maximalCliques_bruteforce(A);
 
 % 只保留大小 >= 3 的 clique 作为高阶超边
@@ -75,4 +70,32 @@ end
 % 去重
 all_hyperEdges = unique_hyperedges(all_hyperEdges);
 
+end
+
+
+function threshold = select_plv_elbow_threshold_local(plvVals)
+plvVals = plvVals(isfinite(plvVals) & plvVals > 0);
+if isempty(plvVals)
+    threshold = inf;
+    return;
+end
+
+candidates = 0:0.0025:1;
+density = arrayfun(@(x) mean(plvVals >= x), candidates);
+
+if numel(candidates) < 3 || (max(candidates) - min(candidates)) == 0 || ...
+        (max(density) - min(density)) == 0
+    threshold = median(plvVals);
+    return;
+end
+
+xn = (candidates - min(candidates)) ./ (max(candidates) - min(candidates));
+yn = (density - min(density)) ./ (max(density) - min(density));
+p1 = [xn(1), yn(1)];
+p2 = [xn(end), yn(end)];
+lineVec = p2 - p1;
+
+dist = abs(lineVec(1) .* (p1(2) - yn) - (p1(1) - xn) .* lineVec(2)) ./ norm(lineVec);
+[~, idx] = max(dist);
+threshold = candidates(idx);
 end

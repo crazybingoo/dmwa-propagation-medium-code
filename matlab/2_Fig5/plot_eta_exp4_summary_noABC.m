@@ -18,7 +18,7 @@
 clc; clear; close all;
 
 %% 1) 路径设置
-outDir = 'E:\wcldematlab\keep\new_idea\8 - n_u_v\2_Fig5_size_adjusted';
+outDir = 'example_project\2_Fig5_size_adjusted';
 
 regionCsv = fullfile(outDir, 'ALL_CASES_exp4_stage_region_contribution.csv');
 macroCsv  = fullfile(outDir, 'ALL_CASES_exp4_stage_macro_role_contribution.csv');

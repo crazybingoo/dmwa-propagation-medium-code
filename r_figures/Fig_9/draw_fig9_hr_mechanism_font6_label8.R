@@ -17,7 +17,7 @@ file_arg <- sub("^--file=", "", args[grepl("^--file=", args)])
 out_dir <- if (length(file_arg) > 0) {
   dirname(normalizePath(file_arg[1], winslash = "/", mustWork = TRUE))
 } else {
-  file.path("F:/6", "\u521d\u7a3f0514-", "nature_fig", "Fig_9")
+  file.path("figures", "Fig_9")
 }
 src_dir <- file.path(out_dir, "source_data")
 

@@ -15,11 +15,17 @@ FIG_PANEL_PT <- 12.5
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 eta_italic_sym <- "\U0001D702"
 
-base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Supplementary_Fig_2")
-if (length(base_candidates) < 1) {
-  stop("Cannot locate Supplementary_Fig_2 directory under example_project/*0514-/nature_fig")
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
 }
-base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
+base_dir <- normalizePath(
+  Sys.getenv("SUPPFIG2_DATA_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = TRUE
+)
 out_base <- file.path(base_dir, "Supplementary_Fig_2")
 
 window_csv <- file.path(base_dir, "Supplementary_Fig_2_window_eta_source.csv")
@@ -200,7 +206,7 @@ legend_text <- paste(
   "Each panel denotes one seizure, with the x axis normalized to the window sequence of that recording.",
   "Line colour indicates the five seizure stages: pre-ictal, early ictal, mid-ictal, late ictal and post-ictal.",
   "Dashed grey lines mark the corresponding pre-ictal mean \u03b7 for each seizure.",
-  "Source data are window-level \u03b7 estimates derived from 3-s windows after applying one seizure-level PLV threshold selected from the density-threshold elbow.",
+  "Source data are window-level \u03b7 estimates derived from 3-s windows and the 0.55 PLV percentile hyperedge-extraction threshold.",
   sep = " "
 )
 writeLines(legend_text, file.path(base_dir, "Supplementary_Fig_2_legend_draft.txt"), useBytes = TRUE)

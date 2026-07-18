@@ -5,13 +5,19 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(tidyr)
   library(patchwork)
+  library(ggtext)
   library(svglite)
   library(ragg)
 })
 
-FIG_TEXT_PT <- 6
-FIG_PANEL_PT <- 8
+if (.Platform$OS.type == "windows") {
+  suppressWarnings(try(Sys.setlocale("LC_ALL", "Chinese_China.utf8"), silent = TRUE))
+}
+
+FIG_TEXT_PT <- 10.5
+FIG_PANEL_PT <- 12.5
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
+eta_italic_sym <- "\U0001D702"
 
 
 phase_order <- c("pre-ictal", "early", "mid", "late", "post-ictal")
@@ -27,12 +33,22 @@ region_order <- c("SOZ", "PZ", "NIZ")
 macro_order <- c("SOZ_only", "PZ_only", "NIZ_only", "SOZ_PZ", "SOZ_NIZ", "PZ_NIZ", "SOZ_PZ_NIZ")
 role_order <- c("source-like", "balanced", "sink-like")
 
-input_dir <- file.path("data", "Fig_5_size_adjusted")
-out_dir_candidates <- Sys.glob(file.path("example_project", "*0514-", "nature_fig", "Fig_5"))
-if (length(out_dir_candidates) < 1) {
-  stop("Cannot locate Fig_5 directory under example_project/*0514-/nature_fig")
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
 }
-out_dir <- normalizePath(out_dir_candidates[1], winslash = "/", mustWork = TRUE)
+input_dir <- normalizePath(
+  Sys.getenv("FIG5_DATA_DIR", unset = file.path(script_dir, "data")),
+  winslash = "/",
+  mustWork = FALSE
+)
+out_dir <- normalizePath(
+  Sys.getenv("FIG5_OUTPUT_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = FALSE
+)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 region_case_csv <- file.path(input_dir, "ALL_CASES_exp4_stage_region_contribution_size_adjusted.csv")
@@ -232,6 +248,15 @@ macro_palette <- c(
   SOZ_PZ_NIZ = "#8056B3"
 )
 role_palette <- c(`source-like` = "#CC79A7", balanced = "#5A5A5A", `sink-like` = "#56B4E9")
+macro_label_map <- c(
+  SOZ_only = "SOZ",
+  PZ_only = "PZ",
+  NIZ_only = "NIZ",
+  SOZ_PZ = "SOZ-PZ",
+  SOZ_NIZ = "SOZ-NIZ",
+  PZ_NIZ = "PZ-NIZ",
+  SOZ_PZ_NIZ = "SOZ-PZ-NIZ"
+)
 
 theme_nature <- function(base_size = FIG_TEXT_PT, base_family = "Arial") {
   theme_classic(base_size = base_size, base_family = base_family) +
@@ -239,26 +264,28 @@ theme_nature <- function(base_size = FIG_TEXT_PT, base_family = "Arial") {
       axis.line = element_line(linewidth = 0.35, colour = "#1E1E1E"),
       axis.ticks = element_line(linewidth = 0.35, colour = "#1E1E1E"),
       axis.title = element_text(size = FIG_TEXT_PT),
+      axis.title.y = element_text(margin = margin(r = 1.5)),
       axis.text = element_text(size = FIG_TEXT_PT, colour = "#252525"),
       plot.title = element_text(size = FIG_TEXT_PT, face = "bold", hjust = 0),
       legend.title = element_blank(),
-      legend.text = element_text(size = FIG_TEXT_PT),
-      legend.key.height = unit(3.1, "mm"),
-      legend.key.width = unit(5.0, "mm"),
-      legend.spacing.y = unit(0.3, "mm"),
+      legend.text = element_text(size = FIG_TEXT_PT - 1.2),
+      legend.key.height = unit(2.7, "mm"),
+      legend.key.width = unit(5.6, "mm"),
+      legend.spacing.x = unit(0.9, "mm"),
+      legend.spacing.y = unit(0.0, "mm"),
       panel.grid.major.y = element_line(linewidth = 0.18, colour = "#E8EDF2"),
       panel.grid.major.x = element_blank(),
       panel.grid.minor = element_blank(),
-      plot.margin = margin(5, 5, 5, 5)
+      plot.margin = margin(3, 2, 3, 1)
     )
 }
 
-line_panel <- function(df, x_group, y_label, palette, title, y_limits = NULL, y_breaks = waiver(), legend_position = "inside") {
+line_panel <- function(df, x_group, y_label, palette, title, y_limits = NULL, y_breaks = waiver(), legend_position = "inside", colour_labels = function(x) gsub("_", "-", x, fixed = TRUE)) {
   p <- ggplot(df, aes(x = phase, y = mean, group = {{ x_group }}, colour = {{ x_group }})) +
     geom_errorbar(aes(ymin = mean - sem, ymax = mean + sem), width = 0.08, linewidth = 0.38, alpha = 0.95) +
     geom_line(linewidth = 0.58) +
     geom_point(shape = 21, size = 1.8, stroke = 0.35, fill = "white") +
-    scale_colour_manual(values = palette, labels = function(x) gsub("_", "-", x, fixed = TRUE)) +
+    scale_colour_manual(values = palette, labels = colour_labels) +
     scale_y_continuous(limits = y_limits, breaks = y_breaks, expand = expansion(mult = c(0.04, 0.08))) +
     labs(x = NULL, y = y_label, title = title) +
     theme_nature() +
@@ -279,47 +306,77 @@ line_panel <- function(df, x_group, y_label, palette, title, y_limits = NULL, y_
 p_a <- line_panel(
   panel_a,
   region,
-  expression(eta~"burden per node"),
+  paste0(eta_italic_sym, " burden per node"),
   region_palette,
-  "Regional eta burden\n(size-adjusted)",
+  "<b>Regional <i>η</i> burden<br>(size-adjusted)</b>",
   y_limits = c(0.009, 0.0192),
-  y_breaks = seq(0.009, 0.019, 0.002)
-)
+  y_breaks = seq(0.009, 0.019, 0.002),
+  legend_position = "bottom"
+) +
+  labs(tag = "a") +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE, override.aes = list(linewidth = 0.85, size = 1.65))) +
+  theme(
+    plot.title = ggtext::element_markdown(size = FIG_TEXT_PT, hjust = 0, colour = "#252525"),
+    plot.tag.position = c(0.055, 0.985),
+    legend.justification = "center",
+    legend.box.just = "center",
+    legend.margin = margin(t = -1, r = 0, b = 0, l = 0),
+    legend.box.margin = margin(t = -2, r = 0, b = 0, l = 0)
+  )
 
 p_b <- line_panel(
   panel_b,
   macro_state,
-  expression(eta~"burden, absolute proxy"),
+  paste0(eta_italic_sym, " burden, absolute proxy"),
   macro_palette,
   "Macro-state combination",
   y_limits = c(0, 0.115),
   y_breaks = seq(0, 0.10, 0.025),
-  legend_position = "inside"
+  legend_position = "bottom",
+  colour_labels = macro_label_map
 ) +
-  guides(colour = guide_legend(ncol = 2, byrow = TRUE, override.aes = list(linewidth = 0.65, size = 1.7))) +
+  labs(tag = "b") +
+  guides(colour = guide_legend(ncol = 3, byrow = TRUE, override.aes = list(linewidth = 0.90, size = 1.55))) +
   theme(
-    legend.position.inside = c(0.99, 0.98),
-    legend.justification = c(1, 1),
-    legend.background = element_rect(fill = scales::alpha("white", 0.86), colour = NA),
-    legend.margin = margin(0, 0, 0, 0)
+    legend.justification = "center",
+    legend.box.just = "center",
+    legend.text = element_text(size = FIG_TEXT_PT - 1.7),
+    legend.key.width = unit(5.2, "mm"),
+    legend.key.height = unit(2.7, "mm"),
+    legend.spacing.x = unit(0.75, "mm"),
+    legend.margin = margin(t = -1, r = 0, b = 0, l = 0),
+    legend.box.margin = margin(t = -2, r = 0, b = 0, l = 0),
+    plot.tag.position = c(0.055, 0.985)
   )
 
 p_c <- line_panel(
   panel_c,
   role,
-  expression(eta~"burden, absolute proxy"),
+  paste0(eta_italic_sym, " burden, absolute proxy"),
   role_palette,
   "Source/sink role",
   y_limits = c(0, 0.25),
-  y_breaks = seq(0, 0.25, 0.05)
-)
+  y_breaks = seq(0, 0.25, 0.05),
+  legend_position = "bottom"
+) +
+  labs(tag = "c") +
+  guides(colour = guide_legend(ncol = 1, byrow = TRUE, override.aes = list(linewidth = 0.85, size = 1.55))) +
+  theme(
+    legend.justification = "center",
+    legend.box.just = "center",
+    legend.margin = margin(t = -1, r = 0, b = 0, l = 0),
+    legend.box.margin = margin(t = -2, r = 0, b = 0, l = 0),
+    plot.tag.position = c(0.025, 0.985)
+  )
 
-fig <- (p_a | p_b | p_c) +
-  plot_layout(widths = c(1.06, 1.16, 0.96), guides = "keep") +
-  plot_annotation(tag_levels = "a") &
+fig <- wrap_plots(
+  p_a, p_b, p_c,
+  widths = c(1.00, 1.28, 1.00),
+  guides = "keep"
+) &
   theme(plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", family = "Arial"))
 
-save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 68, dpi = 600) {
+save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 92, dpi = 600) {
   w <- width_mm / 25.4
   h <- height_mm / 25.4
   svglite::svglite(paste0(filename, ".svg"), width = w, height = h)
@@ -336,7 +393,7 @@ save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 68, dpi = 600
   dev.off()
 }
 
-out_base <- file.path(out_dir, "Fig5_eta_burden_distribution_font6_label8")
+out_base <- file.path(out_dir, "Fig5_eta_burden_distribution_font10p5_label12p5_legends_below")
 save_pub_r(fig, out_base)
 
 post_checks <- tibble(
@@ -400,7 +457,12 @@ qa_lines <- c(
   paste(capture.output(print(panel_c_values, n = Inf)), collapse = "\n"),
   "",
   "Interpretation boundary:",
-  "Do not describe panels B/C as size-adjusted per-node effects. Only panel A supports size-adjusted regional per-node claims; panels B/C support total burden claims."
+  "Do not describe panels B/C as size-adjusted per-node effects. Only panel A supports size-adjusted regional per-node claims; panels B/C support total burden claims.",
+  "",
+  "Legend adjustment:",
+  "Legends are placed below the corresponding panels. Panel B uses a compact three-column legend below the plot window; panels A and C use compact panel-level legends below their plot windows.",
+  "Legend glyphs were lengthened and thickened, especially for panel B, to improve colour discrimination.",
+  "Panel legends are centre-aligned to their own plot windows to avoid the panel C legend crowding panel B."
 )
 writeLines(qa_lines, file.path(out_dir, "Fig5_QA_notes.txt"))
 

@@ -69,3 +69,6 @@ results/
 outputs/
 figures/
 exports/
+
+# The publication source-data workbook is intentionally tracked.
+!Source_Data.xlsx

@@ -11,10 +11,23 @@ if (length(missing_packages) > 0) {
   stop("Missing R packages: ", paste(missing_packages, collapse = ", "), call. = FALSE)
 }
 
-out_dir <- file.path("figures", "Supplementary_Fig_4")
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
+}
+out_dir <- normalizePath(
+  Sys.getenv("SUPPFIG4_OUTPUT_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = FALSE
+)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-stage_source_path <- file.path("figures", "Supplementary_Fig_2", "Supplementary_Fig_2_stage_eta_source.csv")
+stage_source_path <- Sys.getenv(
+  "SUPPFIG4_STAGE_SOURCE",
+  unset = file.path(script_dir, "..", "Supplementary_Fig_2", "Supplementary_Fig_2_stage_eta_source.csv")
+)
 stage_raw <- read.csv(stage_source_path, stringsAsFactors = FALSE, check.names = FALSE)
 
 expected_phases <- c("pre-ictal", "early", "mid", "late", "post-ictal")
@@ -418,7 +431,7 @@ p_d <- ggplot(loo_tbl, aes(x = reorder(patient_id, mean_delta_leave_one_out), y 
   scale_y_continuous(labels = number_format(accuracy = 0.001), expand = expansion(mult = c(0.10, 0.22))) +
   labs(
     title = "Leave-one-patient-out sensitivity",
-    x = "Patient left out",
+    x = "Patient omitted",
     y = "Mean <i>Δη</i> (Ictal-Pre)"
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))

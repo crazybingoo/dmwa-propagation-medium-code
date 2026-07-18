@@ -9,19 +9,32 @@ suppressPackageStartupMessages({
   library(ragg)
   library(scales)
   library(grid)
+  library(cowplot)
 })
 
-FIG_TEXT_PT <- 6
-FIG_PANEL_PT <- 8
-FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
-
-
-base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Fig_4")
-if (length(base_candidates) < 1) {
-  stop("Cannot locate Fig_4 directory under example_project/*0514-/nature_fig/Fig_4")
+if (.Platform$OS.type == "windows") {
+  suppressWarnings(try(Sys.setlocale("LC_ALL", "Chinese_China.utf8"), silent = TRUE))
 }
-base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
-out_base <- file.path(base_dir, "Fig4_topology_controls_font6_label8")
+
+FIG_TEXT_PT <- 10.5
+FIG_PANEL_PT <- 12.5
+FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
+FIG_HEATMAP_TEXT_PT <- 8.0
+FIG_HEATMAP_TEXT_SIZE <- FIG_HEATMAP_TEXT_PT / 2.845276
+
+
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
+}
+base_dir <- normalizePath(
+  Sys.getenv("FIG4_DATA_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = TRUE
+)
+out_base <- file.path(base_dir, "Fig4_topology_controls_font10p5_label12p5_no_c_legend_direct_labels")
 
 phase_levels <- c("pre-ictal", "early", "mid", "late", "post-ictal")
 phase_labels <- c("Pre", "Early", "Mid", "Late", "Post")
@@ -48,10 +61,17 @@ model_shapes <- c(
   "WeightShuffled" = 24,
   "TopologyShuffled" = 23
 )
+direct_label_offsets <- c(
+  "Original" = 0.0012,
+  "DensityMatched" = -0.0010,
+  "WeightShuffled" = -0.0003,
+  "TopologyShuffled" = 0.0000
+)
 
 eta_sym <- "\u03b7"
 delta_sym <- "\u0394"
 times_sym <- "\u00d7"
+eta_italic_sym <- "\U0001D702"
 
 theme_nature <- function(base_size = FIG_TEXT_PT) {
   theme_classic(base_size = base_size, base_family = "Arial") +
@@ -221,6 +241,18 @@ write_csv(delta_summary, file.path(base_dir, "Fig4_delta_statistics.csv"))
 write_csv(retention_summary, file.path(base_dir, "Fig4_effect_retention_summary.csv"))
 write_csv(retention_heat, file.path(base_dir, "Fig4_mean_effect_retention_heatmap.csv"))
 
+direct_labels <- stage_summary %>%
+  filter(phase5 == "post-ictal") %>%
+  mutate(
+    label_y = eta_mean + direct_label_offsets[as.character(model)],
+    label_x = case_when(
+      model == "TopologyShuffled" ~ 4.92,
+      model == "WeightShuffled" ~ 4.92,
+      TRUE ~ 4.88
+    ),
+    label = as.character(model_label)
+  )
+
 p_a <- ggplot(stage_summary, aes(phase_label, eta_mean, group = model, colour = model, fill = model, linetype = model, shape = model)) +
   geom_line(linewidth = 0.42) +
   geom_errorbar(aes(ymin = eta_mean - eta_ci, ymax = eta_mean + eta_ci), width = 0.10, linewidth = 0.30) +
@@ -230,11 +262,28 @@ p_a <- ggplot(stage_summary, aes(phase_label, eta_mean, group = model, colour = 
   scale_linetype_manual(values = model_linetypes, labels = model_labels) +
   scale_shape_manual(values = model_shapes, labels = model_labels) +
   labs(
-    title = paste0("Control trajectories for ", eta_sym),
+    tag = "a",
+    title = paste0("<b>Control trajectories for <i>", eta_sym, "</i></b>"),
     x = NULL,
-    y = paste0("Stage mean ", eta_sym)
+    y = paste0("Stage mean ", eta_italic_sym)
   ) +
-  theme(legend.position = "bottom")
+  guides(
+    colour = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(linewidth = 0.55, size = 1.8)),
+    fill = "none",
+    linetype = "none",
+    shape = "none"
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.justification = "left",
+    legend.box.just = "left",
+    legend.margin = margin(t = -1, r = 0, b = 0, l = 0),
+    legend.box.margin = margin(t = -2, r = 0, b = 0, l = 0),
+    plot.title = ggtext::element_markdown(size = FIG_TEXT_PT, hjust = 0, colour = "#202124"),
+    axis.title.y = element_text(margin = margin(r = 1.5)),
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.075, 0.985)
+  )
 
 p_b <- ggplot(delta_summary, aes(phase_label, mean_delta, group = model, colour = model, fill = model, linetype = model, shape = model)) +
   geom_hline(yintercept = 0, linetype = "22", linewidth = 0.28, colour = "#7A828C") +
@@ -246,31 +295,40 @@ p_b <- ggplot(delta_summary, aes(phase_label, mean_delta, group = model, colour 
   scale_linetype_manual(values = model_linetypes, labels = model_labels) +
   scale_shape_manual(values = model_shapes, labels = model_labels) +
   labs(
-    title = paste0("Stage effect relative to Pre"),
+    tag = "b",
+    title = "Stage effect relative to Pre",
     x = NULL,
-    y = paste0(delta_sym, eta_sym, " relative to Pre")
+    y = paste0(delta_sym, eta_italic_sym, " relative to Pre")
   ) +
-  theme(legend.position = "none")
+  theme(
+    legend.position = "none",
+    axis.title.y = element_text(margin = margin(r = 1.5)),
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.055, 0.985)
+  )
 
 p_c <- ggplot(retention_heat, aes(phase_label, model_label, fill = retention_mean)) +
   geom_tile(width = 0.92, height = 0.82, colour = "white", linewidth = 0.28) +
-  geom_text(aes(label = label, colour = text_col), family = "Arial", size = FIG_GEOM_TEXT_SIZE, fontface = "bold") +
+  geom_text(aes(label = label, colour = text_col), family = "Arial", size = FIG_HEATMAP_TEXT_SIZE, fontface = "bold") +
   scale_colour_identity() +
   scale_fill_gradient(
     low = "#F1F3F5", high = "#2E6F9E",
     limits = c(0, 125), oob = scales::squish,
-    name = "Mean effect\nretained (%)"
+    name = "Mean effect\nretained (%)",
+    guide = "none"
   ) +
   labs(
+    tag = "c",
     title = "Retention of the empirical stage effect",
     x = NULL,
     y = NULL
   ) +
   theme(
-    legend.position = "right",
+    legend.position = "none",
     panel.grid = element_blank(),
     axis.ticks = element_blank(),
-    plot.margin = margin(3, 2, 3, 1)
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.185, 0.985)
   )
 
 density_long <- stage_summary %>%
@@ -296,29 +354,50 @@ p_d <- ggplot(density_long, aes(phase_label, binary_density_mean, group = densit
   scale_shape_manual(values = c("Original density" = 21, "Density matched" = 22)) +
   coord_cartesian(ylim = c(0.395, 0.535), clip = "on") +
   labs(
-    title = "Binary density under control models",
+    tag = "d",
+    title = "Density",
     x = NULL,
     y = "Binary density"
   ) +
-  theme(legend.position = "none")
-
-layout_design <- "
-AAAABBBB
-AAAABBBB
-CCCCCDDD
-CCCCCDDD
-"
-
-fig <- p_a + p_b + p_c + p_d +
-  plot_layout(design = layout_design, heights = c(1.00, 1.00, 0.92, 0.92), guides = "collect") +
-  plot_annotation(tag_levels = "a") &
   theme(
-    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", colour = "#202124"),
-    plot.tag.position = c(0.012, 0.988),
-    legend.position = "bottom"
+    legend.position = "none",
+    axis.text.x = element_text(angle = 28, hjust = 1, vjust = 1),
+    axis.title.y = element_text(margin = margin(r = 1.5)),
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.055, 0.985)
   )
 
-save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 132, dpi = 600) {
+p_a_panel <- p_a
+
+top_row <- free(
+  wrap_plots(
+    p_a_panel, plot_spacer(), p_b,
+    design = "ABC",
+    widths = c(1.00, 0.055, 1.00),
+    guides = "keep"
+  ),
+  side = "l"
+)
+
+bottom_row <- wrap_plots(
+  p_c, plot_spacer(), p_d,
+  design = "ABC",
+  widths = c(1.08, 0.060, 0.92),
+  guides = "keep"
+)
+
+fig_grid <- wrap_plots(
+  top_row, plot_spacer(), bottom_row,
+  ncol = 1,
+  heights = c(1.00, 0.060, 1.00)
+) &
+  theme(
+    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", colour = "#202124", margin = margin(r = 3, b = 1))
+  )
+
+fig <- fig_grid
+
+save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 158, dpi = 600) {
   w <- width_mm / 25.4
   h <- height_mm / 25.4
 
@@ -359,11 +438,11 @@ mean_lines <- c(
 )
 
 legend_text <- paste0(
-  "Fig. 4 | Ordered higher-order topology is necessary for ", eta_sym, " dynamics.\n",
+  "Fig. 4 | Ordered higher-order topology supports stage-dependent ", eta_sym, " dynamics.\n",
   "a, Stage-resolved ", eta_sym, " trajectories for empirical DMWA matrices and three control models. Density-matched matrices reduce density-related confounding, weight-shuffled matrices preserve empirical weight amounts while disrupting weight-topology assignment, and topology-shuffled matrices disrupt ordered hyperedge overlap and cross-order organization. ",
-  "b, Change in ", eta_sym, " relative to the paired pre-ictal baseline. Density matching attenuates but does not eliminate the ictal increase, whereas topology shuffling collapses the stage effect toward zero. ",
-  "c, Retention of the empirical stage effect, expressed as the percentage of the cohort-mean Original ", delta_sym, eta_sym, " preserved by each control at each seizure stage. ",
-  "d, Binary density across stages, showing that density-matched matrices maintain a fixed density baseline while the empirical matrices retain the original density trajectory. Source data are from n = 24 seizures. Points and error bars in a, b and d denote cohort means and 95% confidence intervals."
+  "b, ", delta_sym, eta_sym, " relative to the paired pre-ictal baseline. Density matching attenuates but does not eliminate the ictal increase, whereas topology shuffling collapses the stage effect toward zero. ",
+  "c, Retention of the empirical stage effect, expressed as the percentage of the cohort-mean Original ", delta_sym, eta_sym, " preserved by each control at each seizure stage; values are printed in each cell. ",
+  "d, Binary density across stages, showing that density-matched matrices maintain a stable density baseline while the empirical matrices retain the original density trajectory. Source data are from n = 24 seizures. Points and error bars in a, b and d denote cohort means and 95% confidence intervals."
 )
 writeLines(legend_text, file.path(base_dir, "Fig4_legend_draft.txt"), useBytes = TRUE)
 
@@ -373,6 +452,7 @@ qa_lines <- c(
   "Backend: R only; ggplot2/patchwork/ggbeeswarm/svglite/cairo_pdf/ragg.",
   "Export: SVG/PDF/TIFF/PNG at double-column width.",
   "Statistics: seizure-level summaries; paired deltas relative to pre-ictal baseline; Wilcoxon/Holm statistics exported.",
+  "Legend adjustment: panel c colorbar removed because percentages are printed in cells; the four control-model entries are kept inside panel a and the full-width bottom legend is removed.",
   mean_lines
 )
 writeLines(qa_lines, file.path(base_dir, "Fig4_QA_notes.txt"), useBytes = TRUE)

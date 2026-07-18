@@ -23,7 +23,17 @@ FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 FIG_HEATMAP_TEXT_SIZE <- FIG_HEATMAP_TEXT_PT / 2.845276
 FIG_X_ANGLE <- 35
 
-out_dir <- file.path("figures", "Fig_6")
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
+}
+out_dir <- normalizePath(
+  Sys.getenv("FIG6_DATA_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = TRUE
+)
 source_csv <- file.path(out_dir, "Fig6_retained_fraction_source_data.csv")
 stage_csv <- file.path(out_dir, "Fig6_retained_fraction_stage_means.csv")
 
@@ -104,8 +114,8 @@ theme_fig <- function() {
       axis.title.x = ggtext::element_markdown(margin = margin(t = 2.0)),
       axis.title.y = ggtext::element_markdown(margin = margin(r = 1.5)),
       axis.text = element_text(size = FIG_TICK_PT, colour = pal["ink"]),
-      plot.title = ggtext::element_markdown(size = FIG_TITLE_PT, face = "bold", hjust = 0, colour = pal["ink"], margin = margin(b = 3.0)),
-      legend.title = element_text(size = FIG_LEGEND_PT, colour = pal["ink"]),
+      plot.title = ggtext::element_markdown(size = FIG_TITLE_PT, hjust = 0, colour = pal["ink"], margin = margin(b = 3.0)),
+      legend.title = ggtext::element_markdown(size = FIG_LEGEND_PT, colour = pal["ink"]),
       legend.text = element_text(size = FIG_LEGEND_PT, colour = pal["ink"]),
       legend.key.height = unit(2.4, "mm"),
       legend.key.width = unit(3.6, "mm"),
@@ -159,7 +169,7 @@ p_a <- ggplot(df, aes(retained_f, window_f, fill = NegLog10P)) +
   geom_tile(colour = "white", linewidth = 0.55) +
   scale_fill_gradientn(
     colours = c(pal["blue_0"], pal["blue_1"], pal["blue_2"], pal["blue_3"], pal["blue_4"], pal["blue_5"]),
-    name = "\u2212log\u2081\u2080(\U0001D443)",
+    name = "\u2212log<sub>10</sub>(<i>P</i>)",
     limits = c(0, 4.5),
     breaks = c(1, 2, 3, 4),
     values = rescale(c(0, 1, 2, 3, 4, 4.5)),
@@ -170,11 +180,11 @@ p_a <- ggplot(df, aes(retained_f, window_f, fill = NegLog10P)) +
       barheight = unit(34, "mm"),
       title.position = "right",
       label.theme = element_text(size = FIG_CBAR_PT),
-      title.theme = element_text(size = FIG_CBAR_PT, angle = 90, hjust = 0.5, margin = margin(l = 0.6))
+      title.theme = ggtext::element_markdown(size = FIG_CBAR_PT, angle = 90, hjust = 0.5, margin = margin(l = 0.6))
     )
   ) +
   labs(
-    title = "Statistical support for <i>\u03b7</i> increase",
+    title = "<b>Statistical support for <i>\u03b7</i> increase</b>",
     x = "Retained PLV edge fraction",
     y = "Window length"
   ) +
@@ -187,7 +197,7 @@ p_b <- ggplot(df, aes(retained_f, window_f, fill = MeanIctalMinusPre)) +
   geom_tile(colour = "white", linewidth = 0.55) +
   scale_fill_gradientn(
     colours = c(pal["blue_0"], pal["blue_1"], pal["blue_2"], pal["blue_3"], pal["blue_4"], pal["blue_5"]),
-    name = "\U0001D6E5\U0001D702",
+    name = "<i>\u0394\u03b7</i>",
     limits = c(0, 0.018),
     breaks = c(0.004, 0.008, 0.012, 0.016),
     labels = number_format(accuracy = 0.001),
@@ -199,11 +209,11 @@ p_b <- ggplot(df, aes(retained_f, window_f, fill = MeanIctalMinusPre)) +
       barheight = unit(34, "mm"),
       title.position = "right",
       label.theme = element_text(size = FIG_CBAR_PT),
-      title.theme = element_text(size = FIG_CBAR_PT, angle = 90, hjust = 0.5, margin = margin(l = 0.6))
+      title.theme = ggtext::element_markdown(size = FIG_CBAR_PT, angle = 90, hjust = 0.5, margin = margin(l = 0.6))
     )
   ) +
   labs(
-    title = "Effect size, <i>\u0394\u03b7</i>",
+    title = "<b>Effect size, <i>\u0394\u03b7</i></b>",
     x = "Retained PLV edge fraction",
     y = NULL
   ) +
@@ -240,7 +250,7 @@ p_c <- ggplot() +
   scale_x_continuous(breaks = expected_fraction, labels = number_format(accuracy = 0.01), expand = expansion(mult = c(0.025, 0.025))) +
   scale_y_continuous(labels = number_format(accuracy = 0.001), expand = expansion(mult = c(0.04, 0.08))) +
   labs(
-    title = "<i>\u0394\u03b7</i> attenuation with scaffold density",
+    title = "<b><i>\u0394\u03b7</i> attenuation with scaffold density</b>",
     x = "Retained PLV edge fraction",
     y = "Ictal - pre-ictal <i>\u03b7</i>"
   ) +
@@ -259,7 +269,7 @@ p_d <- ggplot(sig_points, aes(retained_f, window_f)) +
   scale_colour_manual(
     values = c("P<0.01" = unname(pal["summary_blue"]), "P<0.05" = unname(pal["orange"]), "n.s." = unname(pal["neutral"])),
     breaks = c("P<0.01", "P<0.05", "n.s."),
-    labels = c("\U0001D443 < 0.01", "\U0001D443 < 0.05", "n.s."),
+    labels = expression(italic(P) < 0.01, italic(P) < 0.05, "n.s."),
     name = "Paired test",
     guide = guide_legend(
       nrow = 1,
@@ -270,7 +280,7 @@ p_d <- ggplot(sig_points, aes(retained_f, window_f)) +
   scale_shape_manual(
     values = c("P<0.01" = 16, "P<0.05" = 1, "n.s." = 4),
     breaks = c("P<0.01", "P<0.05", "n.s."),
-    labels = c("\U0001D443 < 0.01", "\U0001D443 < 0.05", "n.s."),
+    labels = expression(italic(P) < 0.01, italic(P) < 0.05, "n.s."),
     name = "Paired test",
     guide = "none"
   ) +
@@ -318,10 +328,12 @@ save_pub_r <- function(plot, filename, width_mm = 178, height_mm = 126, dpi = 60
   grDevices::cairo_pdf(paste0(filename, ".pdf"), width = w, height = h, family = "Arial")
   print(plot)
   dev.off()
-  ragg::agg_tiff(paste0(filename, ".tiff"), width = w, height = h, units = "in", res = dpi, compression = "lzw")
+  grDevices::tiff(paste0(filename, ".tiff"), width = w, height = h, units = "in", res = dpi,
+                  compression = "lzw", type = "cairo")
   print(plot)
   dev.off()
-  ragg::agg_png(paste0(filename, ".png"), width = w, height = h, units = "in", res = 300)
+  grDevices::png(paste0(filename, ".png"), width = w, height = h, units = "in", res = 300,
+                 type = "cairo")
   print(plot)
   dev.off()
 }

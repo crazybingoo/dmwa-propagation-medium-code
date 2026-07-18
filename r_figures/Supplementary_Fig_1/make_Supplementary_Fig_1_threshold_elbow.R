@@ -16,11 +16,17 @@ FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 FIG_HEATMAP_TEXT_PT <- 8.0
 FIG_HEATMAP_TEXT_SIZE <- FIG_HEATMAP_TEXT_PT / 2.845276
 
-base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Supplementary_Fig_1")
-if (length(base_candidates) < 1) {
-  stop("Cannot locate Supplementary_Fig_1 directory under example_project/*0514-/nature_fig")
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
 }
-base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
+base_dir <- normalizePath(
+  Sys.getenv("SUPPFIG1_DATA_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = TRUE
+)
 out_base <- file.path(base_dir, "Supplementary_Fig_1")
 
 phase_levels <- c("pre-ictal", "early-ictal", "mid-ictal", "late-ictal", "post-ictal")

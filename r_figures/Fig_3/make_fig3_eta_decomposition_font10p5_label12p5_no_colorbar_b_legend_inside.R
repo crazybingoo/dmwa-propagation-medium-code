@@ -12,20 +12,39 @@ suppressPackageStartupMessages({
   library(grid)
 })
 
-FIG_TEXT_PT <- 6
-FIG_PANEL_PT <- 8
-FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
-
-
-base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Fig_3")
-if (length(base_candidates) < 1) {
-  stop("Cannot locate Fig_3 directory under example_project/*0514-/nature_fig/Fig_3")
+if (.Platform$OS.type == "windows") {
+  suppressWarnings(try(Sys.setlocale("LC_ALL", "Chinese_China.utf8"), silent = TRUE))
 }
-base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
-out_base <- file.path(base_dir, "Fig3_eta_decomposition_font6_label8")
+
+FIG_TEXT_PT <- 10.5
+FIG_PANEL_PT <- 12.5
+FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
+FIG_HEATMAP_TEXT_PT <- 8.0
+FIG_HEATMAP_TEXT_SIZE <- FIG_HEATMAP_TEXT_PT / 2.845276
+
+
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
+}
+base_dir <- normalizePath(
+  Sys.getenv("FIG3_DATA_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = TRUE
+)
+out_base <- file.path(base_dir, "Fig3_eta_decomposition_font10p5_label12p5_no_colorbar_b_legend_inside")
 
 phase_levels <- c("pre-ictal", "early", "mid", "late", "post-ictal")
 phase_labels <- c("Pre", "Early", "Mid", "Late", "Post")
+phase_axis_labels <- c(
+  "Pre" = "Pre\n(ref.)",
+  "Early" = "Early",
+  "Mid" = "Mid",
+  "Late" = "Late",
+  "Post" = "Post"
+)
 phase_cols <- c(
   "pre-ictal" = "#5D83B5",
   "early" = "#6EAD67",
@@ -39,6 +58,13 @@ eta_sym <- "\u03b7"
 lambda1_sym <- "\u03bb1"
 lambda2_sym <- "\u03bb2"
 times_sym <- "\u00d7"
+eta_italic_sym <- "\U0001D702"
+eta_bolditalic_sym <- "\U0001D73C"
+lambda_italic_sym <- "\U0001D706"
+R_italic_sym <- "\U0001D445"
+PR_italic_sym <- "\U0001D443\U0001D445"
+subscript_1 <- "\u2081"
+subscript_2 <- "\u2082"
 
 theme_nature <- function(base_size = FIG_TEXT_PT) {
   theme_classic(base_size = base_size, base_family = "Arial") +
@@ -82,15 +108,18 @@ ci_one_sample <- function(x) {
 
 metric_spec <- tibble::tribble(
   ~metric_id,       ~column,                 ~metric_plot,              ~metric_plain,        ~family,
-  "eta",            "eta_mean",              "eta",                     "eta",                "index",
-  "resource_R",     "resource_R_mean",       "R",                       "R",                  "primary",
-  "lambda1",        "lambda1_mean",          "u03bb1",               "lambda1",            "primary",
-  "spectral_gap",   "spectral_gap_mean",     "u03bb1-u03bb2",     "lambda1-lambda2",    "secondary",
-  "lambda2_ratio",  "lambda2_ratio_mean",    "u03bb2/u03bb1",     "lambda2/lambda1",    "secondary",
-  "spectral_PR",    "spectral_PR_mean",      "Spectral~PR",             "Spectral PR",        "secondary"
+  "eta",            "eta_mean",              eta_sym,                                      "eta",             "index",
+  "resource_R",     "resource_R_mean",       "R",                                          "R",               "primary",
+  "lambda1",        "lambda1_mean",          paste0("\u03bb", subscript_1),                 "lambda1",         "primary",
+  "spectral_gap",   "spectral_gap_mean",     paste0("\u03bb", subscript_1, " - \u03bb", subscript_2), "lambda1-lambda2", "secondary",
+  "lambda2_ratio",  "lambda2_ratio_mean",    paste0("\u03bb", subscript_2, "/\u03bb", subscript_1),   "lambda2/lambda1", "secondary",
+  "spectral_PR",    "spectral_PR_mean",      "PR",                                         "Spectral PR",     "secondary"
 )
 
 metric_plot_levels <- metric_spec$metric_plot
+secondary_metric_levels <- metric_spec %>%
+  filter(metric_id %in% c("lambda2_ratio", "spectral_PR")) %>%
+  pull(metric_plot)
 
 stage <- read_csv(
   file.path(base_dir, "ALL_CASES_stage5_eta_decomposition.csv"),
@@ -198,7 +227,7 @@ heat_df <- change_stats %>%
   ) %>%
   bind_rows(pre_heat) %>%
   mutate(
-    label = ifelse(is_pre, "0", paste0(ifelse(mean_pct >= 0, "+", ""), sprintf("%.1f", mean_pct), stars)),
+    label = ifelse(is_pre, "Ref.", paste0(ifelse(mean_pct >= 0, "+", ""), sprintf("%.1f", mean_pct), stars)),
     text_col = ifelse(abs(mean_pct) > 16, "white", "#202124")
   )
 
@@ -212,24 +241,28 @@ p_a <- ggplot(heat_df, aes(phase_label, metric_plot)) +
     aes(fill = mean_pct),
     linewidth = 0.28, colour = "white", width = 0.92, height = 0.88
   ) +
-  geom_text(aes(label = label, colour = text_col), size = FIG_GEOM_TEXT_SIZE, family = "Arial", fontface = "bold") +
+  geom_text(aes(label = label, colour = text_col), size = FIG_HEATMAP_TEXT_SIZE, family = "Arial", fontface = "bold") +
   scale_colour_identity() +
   scale_fill_gradient2(
     low = "#4778A8", mid = "white", high = "#C95C50",
     midpoint = 0, limits = c(-22, 22), oob = scales::squish,
-    name = "Mean change\nfrom pre (%)"
+    name = "Mean change\nfrom pre (%)",
+    guide = "none"
   ) +
-  scale_x_discrete(drop = FALSE) +
-  scale_y_discrete() +
+  scale_x_discrete(drop = FALSE, labels = phase_axis_labels) +
+  scale_y_discrete(labels = identity) +
   labs(
-    title = "Paired component changes",
+    tag = "a",
+    title = "Paired component changes from pre (%)",
     x = NULL,
     y = NULL
   ) +
   theme(
     panel.grid = element_blank(),
     axis.ticks = element_blank(),
-    legend.position = "right"
+    axis.text.y = element_text(face = "italic"),
+    legend.position = "none",
+    plot.tag.position = c(0.08, 0.985)
   )
 
 balance_wide <- change %>%
@@ -275,7 +308,7 @@ balance_long <- balance_wide_plot %>%
     component = recode(
       component,
       resource_contribution = "Resource term (+dlog R)",
-      dominance_contribution = paste0("Dominant term (-dlog ", lambda1_sym, ")")
+      dominance_contribution = "Dominant term (-dlog lambda1)"
     )
   )
 
@@ -283,10 +316,14 @@ balance_bar <- balance_long %>%
   group_by(phase5, phase_label, component) %>%
   summarise(mean = mean(contribution, na.rm = TRUE), .groups = "drop")
 
-balance_fill_cols <- c("#4778A8", "#C95C50")
+balance_fill_cols <- c("#6F9CC7", "#D98276")
 names(balance_fill_cols) <- c(
-  paste0("Dominant term (-dlog ", lambda1_sym, ")"),
+  "Dominant term (-dlog lambda1)",
   "Resource term (+dlog R)"
+)
+balance_fill_labels <- c(
+  "Dominant term (-dlog lambda1)" = paste0("Dominant term (-dlog ", lambda_italic_sym, subscript_1, ")"),
+  "Resource term (+dlog R)" = paste0("Resource term (+dlog ", R_italic_sym, ")")
 )
 
 net_summary <- balance_wide_plot %>%
@@ -326,14 +363,43 @@ p_b <- ggplot() +
     aes(phase_label, mean),
     shape = 21, size = 2.35, stroke = 0.35, fill = "#202124", colour = "white"
   ) +
-  scale_fill_manual(values = balance_fill_cols, name = NULL) +
-  scale_x_discrete(drop = FALSE) +
-  labs(
-    title = paste0("Ratio balance underlying ", eta_sym),
-    x = NULL,
-    y = paste0("Contribution to 100 ", times_sym, " dlog ", eta_sym)
+  annotate(
+    "segment",
+    x = 5.36, xend = 5.56, y = 14.25, yend = 14.25,
+    linewidth = 3.2, colour = balance_fill_cols[["Resource term (+dlog R)"]]
   ) +
-  theme(legend.position = "bottom")
+  annotate(
+    "text",
+    x = 5.64, y = 14.25, label = "+dlog R",
+    hjust = 0, vjust = 0.5, family = "Arial", size = FIG_GEOM_TEXT_SIZE,
+    fontface = "bold", colour = "#202124"
+  ) +
+  annotate(
+    "segment",
+    x = 5.36, xend = 5.56, y = -13.55, yend = -13.55,
+    linewidth = 3.2, colour = balance_fill_cols[["Dominant term (-dlog lambda1)"]]
+  ) +
+  annotate(
+    "text",
+    x = 5.64, y = -13.55, label = paste0("-dlog ", lambda1_sym),
+    hjust = 0, vjust = 0.5, family = "Arial", size = FIG_GEOM_TEXT_SIZE,
+    fontface = "bold", colour = "#202124"
+  ) +
+  scale_fill_manual(values = balance_fill_cols, labels = balance_fill_labels, name = NULL, guide = "none") +
+  scale_x_discrete(drop = FALSE, labels = phase_axis_labels, expand = expansion(add = c(0.55, 2.05))) +
+  coord_cartesian(clip = "off") +
+  labs(
+    tag = "b",
+    title = paste0("<b>Ratio balance underlying <i>", eta_sym, "</i></b>"),
+    x = NULL,
+    y = paste0("Contribution to relative change,\n100 ", times_sym, " dlog ", eta_italic_sym)
+  ) +
+  theme(
+    legend.position = "none",
+    plot.title = ggtext::element_markdown(size = FIG_TEXT_PT, hjust = 0, colour = "#202124"),
+    plot.margin = margin(3.0, 7.0, 3.0, 3.0),
+    plot.tag.position = c(0.055, 0.985)
+  )
 
 net_eta <- balance_wide_plot %>%
   mutate(
@@ -400,7 +466,7 @@ p_c <- ggplot(p_c_data, aes(phase_label, resource_excess, fill = phase5)) +
     family = "Arial", size = FIG_GEOM_TEXT_SIZE, fontface = "bold", colour = "#202124"
   ) +
   scale_fill_manual(values = phase_cols, guide = "none") +
-  scale_x_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE, labels = phase_axis_labels) +
   coord_cartesian(
     ylim = c(
       min(net_eta$resource_excess, na.rm = TRUE) - 0.15 * diff(range(net_eta$resource_excess, na.rm = TRUE)),
@@ -409,13 +475,15 @@ p_c <- ggplot(p_c_data, aes(phase_label, resource_excess, fill = phase5)) +
     clip = "off"
   ) +
   labs(
-    title = "Net resource excess over spectral dominance",
+    tag = "c",
+    title = "Resource excess vs spectral dominance",
     x = NULL,
-    y = paste0("100 ", times_sym, " dlog(R/", lambda1_sym, ")")
+    y = paste0("100 ", times_sym, " dlog(", R_italic_sym, "/", lambda_italic_sym, subscript_1, ")")
   ) +
   theme(
     axis.title.y = element_text(margin = margin(r = 1.5)),
-    plot.margin = margin(3, 2, 3, 1)
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.08, 0.985)
   )
 
 secondary_stats <- change_stats %>%
@@ -433,7 +501,7 @@ secondary_pre <- stage %>%
     phase_label = factor("Pre", levels = phase_change_labels),
     dlog = 0,
     dlog100 = 0,
-    metric_plot = factor(as.character(metric_plot), levels = c("u03bb2/u03bb1", "Spectral~PR"))
+    metric_plot = factor(as.character(metric_plot), levels = secondary_metric_levels)
   )
 
 secondary <- change %>%
@@ -442,7 +510,7 @@ secondary <- change %>%
     dlog100 = 100 * dlog,
     phase5 = factor(as.character(phase5), levels = phase_change_levels),
     phase_label = factor(as.character(phase_label), levels = phase_change_labels),
-    metric_plot = factor(as.character(metric_plot), levels = c("u03bb2/u03bb1", "Spectral~PR"))
+    metric_plot = factor(as.character(metric_plot), levels = secondary_metric_levels)
   ) %>%
   bind_rows(secondary_pre)
 
@@ -462,7 +530,7 @@ secondary_annot <- secondary_stats %>%
   left_join(metric_spec %>% select(metric_id, metric_plot), by = "metric_id") %>%
   mutate(
     phase_label = factor(as.character(phase_label), levels = phase_change_labels),
-    metric_plot = factor(metric_plot, levels = c("u03bb2/u03bb1", "Spectral~PR"))
+    metric_plot = factor(metric_plot, levels = secondary_metric_levels)
   )
 
 p_d <- ggplot(secondary_plot, aes(phase_label, dlog100, fill = phase5)) +
@@ -489,32 +557,40 @@ p_d <- ggplot(secondary_plot, aes(phase_label, dlog100, fill = phase5)) +
     inherit.aes = FALSE,
     shape = 23, size = 1.55, fill = "#F1F3F5", colour = "#202124", stroke = 0.25
   ) +
-  facet_wrap(~ metric_plot, ncol = 1, scales = "free_y", labeller = label_parsed) +
+  facet_wrap(~ metric_plot, ncol = 1, scales = "free_y", labeller = label_value) +
   scale_fill_manual(values = phase_cols, guide = "none") +
-  scale_x_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE, labels = phase_axis_labels) +
   labs(
+    tag = "d",
     title = "Secondary spectral reorganization",
     x = NULL,
-    y = paste0("Change from pre, 100 ", times_sym, " dlog")
+    y = "Change from pre, 100 x dlog"
   ) +
   theme(
     panel.spacing.y = unit(3.0, "mm"),
-    strip.text = element_text(size = FIG_TEXT_PT, face = "bold"),
+    strip.text = element_text(size = FIG_TEXT_PT, face = "bold.italic"),
     axis.text.x = element_text(size = FIG_TEXT_PT),
     axis.title.y = element_text(margin = margin(r = 1.5)),
-    plot.margin = margin(3, 2, 3, 1)
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.055, 0.985)
   )
 
-fig <- (p_a | p_b) / (p_c | p_d) +
-  plot_layout(widths = c(1.08, 1.07), heights = c(1.00, 1.12), guides = "collect") +
-  plot_annotation(tag_levels = "a") &
+p_c_aligned <- free(p_c, type = "label", side = "l")
+
+fig <- wrap_plots(
+  p_a, plot_spacer(), p_b,
+  p_c_aligned, plot_spacer(), p_d,
+  design = "ABC\n###\nDEF",
+  widths = c(1.08, 0.10, 1.07),
+  heights = c(1.00, 0.10, 1.12),
+  guides = "collect"
+) &
   theme(
-    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", colour = "#202124"),
-    plot.tag.position = c(0.055, 0.985),
-    legend.position = "bottom"
+    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", colour = "#202124", margin = margin(r = 3, b = 1)),
+    legend.position = "none"
   )
 
-save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 142, dpi = 600) {
+save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 148, dpi = 600) {
   w <- width_mm / 25.4
   h <- height_mm / 25.4
 
@@ -548,8 +624,8 @@ eta_stats <- change_stats %>%
 
 legend_text <- paste0(
   "Fig. 3 | ", eta_sym, " reflects proportional reorganization of propagation resources and spectral dominance.\n",
-  "a, Paired stage changes in ", eta_sym, " and its decomposition metrics relative to the pre-ictal baseline, with the pre-ictal stage shown as the zero reference. Values show mean percentage changes from pre-ictal levels; asterisks denote paired Wilcoxon signed-rank tests with Holm correction within each metric. ",
-  "b, Log-ratio decomposition of ", eta_sym, " = R/", lambda1_sym, ". Positive bars show the resource contribution (+dlog R), negative bars show the denominator contribution (-dlog ", lambda1_sym, "), and black points show the net ", eta_sym, " change; the pre-ictal stage is fixed at zero by definition. ",
+  "a, Paired stage changes in ", eta_sym, " and its decomposition metrics relative to the pre-ictal baseline, with the pre-ictal stage labelled as the reference rather than as an observed zero value. Values show mean percentage changes from pre-ictal levels; asterisks denote paired Wilcoxon signed-rank tests with Holm correction within each metric. ",
+  "b, Log-ratio decomposition of ", eta_sym, " = R/", lambda1_sym, ". Direct labels identify the resource contribution (+dlog R) and the denominator contribution (-dlog ", lambda1_sym, "), and black points show the net ", eta_sym, " change; the pre-ictal stage is fixed at zero only as the paired log-ratio reference. ",
   "c, Distribution of the net resource excess over spectral dominance, computed as 100 x dlog(R/", lambda1_sym, "), showing the individual seizure-level contribution that directly yields the proportional increase in ", eta_sym, ". ",
   "d, Stage-wise changes in secondary spectral organization, quantified by ", lambda2_sym, "/", lambda1_sym, " and spectral participation ratio. Source data are from n = 24 seizures. Tests are two-sided paired Wilcoxon signed-rank tests with Holm correction; *P < 0.05, **P < 0.01 and ***P < 0.001."
 )
@@ -562,6 +638,7 @@ qa_lines <- c(
   "Backend: R only; ggplot2/patchwork/ggbeeswarm/ggrepel/svglite/cairo_pdf/ragg.",
   "Export: SVG/PDF/TIFF/PNG at double-column width.",
   "Statistics: paired log changes from pre-ictal baseline; two-sided paired Wilcoxon signed-rank tests with Holm correction within each metric.",
+  "Baseline display: pre-ictal is retained as the paired reference stage; panel a uses Ref. and all x axes mark Pre (ref.) to avoid implying raw values equal zero.",
   paste("Eta paired changes:", paste(eta_stats, collapse = "; "))
 )
 writeLines(qa_lines, file.path(base_dir, "Fig3_QA_notes.txt"), useBytes = TRUE)

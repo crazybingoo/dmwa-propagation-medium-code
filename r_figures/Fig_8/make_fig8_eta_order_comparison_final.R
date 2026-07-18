@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(tidyr)
   library(patchwork)
+  library(ggtext)
   library(svglite)
   library(ragg)
   library(scales)
@@ -12,8 +13,30 @@ suppressPackageStartupMessages({
   library(tibble)
 })
 
-source_dir <- file.path("data", "Fig_8")
-out_dir <- file.path("figures", "Fig_8")
+FIG_TEXT_PT <- 10.5
+FIG_PANEL_PT <- 12.5
+FIG_INTERNAL_TEXT_PT <- 8.0
+FIG_GEOM_TEXT_SIZE <- FIG_INTERNAL_TEXT_PT / 2.845276
+FIG_AUC_TEXT_SIZE <- FIG_INTERNAL_TEXT_PT / 2.845276
+eta_italic_sym <- "\U0001D702"
+
+
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
+}
+source_dir <- normalizePath(
+  Sys.getenv("FIG8_SOURCE_DIR", unset = file.path(script_dir, "data")),
+  winslash = "/",
+  mustWork = FALSE
+)
+out_dir <- normalizePath(
+  Sys.getenv("FIG8_OUTPUT_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = FALSE
+)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 stage_file <- file.path(source_dir, "ALL_CASES_stage5_eta_Comparison.csv")
@@ -229,23 +252,24 @@ model_palette <- c(
   "Low-Order(2-nodes)" = "#8B919A"
 )
 
-theme_nature <- function(base_size = 6.5, base_family = "Arial") {
+theme_nature <- function(base_size = FIG_TEXT_PT, base_family = "Arial") {
   theme_classic(base_size = base_size, base_family = base_family) +
     theme(
       text = element_text(colour = "#202124"),
       axis.line = element_line(linewidth = 0.34, colour = "#232323"),
       axis.ticks = element_line(linewidth = 0.34, colour = "#232323"),
-      axis.title = element_text(size = base_size + 0.1),
-      axis.text = element_text(size = base_size - 0.2, colour = "#333333"),
+      axis.title = element_text(size = FIG_TEXT_PT),
+      axis.title.y = element_text(margin = margin(r = 1.5)),
+      axis.text = element_text(size = FIG_TEXT_PT, colour = "#333333"),
       legend.title = element_blank(),
-      legend.text = element_text(size = base_size - 0.2),
-      plot.title = element_text(size = base_size + 0.8, face = "bold", hjust = 0, colour = "#202124"),
+      legend.text = element_text(size = FIG_TEXT_PT),
+      plot.title = ggtext::element_markdown(size = FIG_TEXT_PT, hjust = 0, colour = "#202124"),
       strip.background = element_blank(),
-      strip.text = element_text(size = base_size + 0.2, face = "bold", colour = "#222222"),
+      strip.text = element_text(size = FIG_TEXT_PT, face = "bold", colour = "#222222"),
       panel.grid = element_blank(),
       plot.background = element_rect(fill = "white", colour = NA),
       panel.background = element_rect(fill = "white", colour = NA),
-      plot.margin = margin(4, 5, 4, 5)
+      plot.margin = margin(3, 2, 3, 1)
     )
 }
 
@@ -253,7 +277,7 @@ paired_label_df <- paired_stats %>%
   mutate(
     label = paste0(
       "\u0394=", formatC(delta_early_minus_pre, format = "f", digits = 4),
-      "\nP=", formatC(p_value, format = "f", digits = 3)
+      "\n\U0001D443=", formatC(p_value, format = "f", digits = 3)
     ),
     x = 1.05,
     y = 1.0125
@@ -298,7 +322,7 @@ p_a <- ggplot(stage, aes(x = phase5, y = eta_mean, colour = Model)) +
     inherit.aes = FALSE,
     hjust = 0,
     vjust = 1,
-    size = 1.8,
+    size = FIG_GEOM_TEXT_SIZE,
     lineheight = 0.92,
     family = "Arial"
   ) +
@@ -308,15 +332,17 @@ p_a <- ggplot(stage, aes(x = phase5, y = eta_mean, colour = Model)) +
   coord_cartesian(ylim = c(0.945, 1.014), clip = "off") +
   labs(
     x = NULL,
-    y = expression(eta),
-    title = paste0("Stage-resolved ", intToUtf8(0x03b7), " across order representations")
+    y = eta_italic_sym,
+    title = "<b>Stage-resolved <i>η</i> across order representations</b>",
+    tag = "a"
   ) +
   guides(colour = "none") +
   theme_nature() +
   theme(
     panel.spacing.x = unit(4.0, "mm"),
-    axis.text.x = element_text(size = 6.0),
-    plot.margin = margin(5, 4, 5, 5)
+    axis.text.x = element_text(size = FIG_TEXT_PT),
+    plot.margin = margin(3, 2, 3, 1),
+    plot.tag.position = c(0.055, 0.985)
   )
 
 variance_plot_data <- variance_tbl %>%
@@ -325,16 +351,22 @@ variance_plot_data <- variance_tbl %>%
 p_b <- ggplot(variance_plot_data, aes(x = Phase, y = Variance, colour = Model, group = Model)) +
   geom_line(linewidth = 0.50) +
   geom_point(size = 1.45) +
+  annotate(
+    "text", x = -Inf, y = Inf, label = "\u00D710\u207B\u2074",
+    hjust = -0.12, vjust = 1.35, size = FIG_GEOM_TEXT_SIZE,
+    family = "Arial", colour = "#333333"
+  ) +
   scale_colour_manual(values = model_palette, breaks = model_levels, labels = model_labels) +
   scale_x_discrete(labels = phase_labels) +
   scale_y_continuous(
-    labels = label_number(accuracy = 0.00002),
+    labels = label_number(scale = 1e4, accuracy = 0.1),
     expand = expansion(mult = c(0.03, 0.12))
   ) +
   labs(
     x = NULL,
-    y = expression("Cross-seizure variance of " * eta),
-    title = "Cross-seizure variability"
+    y = paste0("Cross-seizure variance of ", eta_italic_sym),
+    title = "<b>Cross-seizure variability</b>",
+    tag = "b"
   ) +
   guides(colour = guide_legend(nrow = 1, byrow = TRUE, override.aes = list(linewidth = 0.50, size = 1.25))) +
   theme_nature() +
@@ -343,17 +375,25 @@ p_b <- ggplot(variance_plot_data, aes(x = Phase, y = Variance, colour = Model, g
     legend.justification = "left",
     legend.box.just = "left",
     legend.background = element_blank(),
-    legend.box.margin = margin(-3, 0, 0, 0),
+    legend.box.margin = margin(0, 0, 0, 0),
     legend.spacing.x = unit(2.0, "mm"),
-    axis.text.x = element_text(size = 6.0)
+    axis.text.x = element_text(size = FIG_TEXT_PT),
+    plot.margin = margin(9, 2, 3, 1),
+    plot.tag.position = c(0.080, 0.985)
   )
+
+auc_short_labels <- c(
+  "DMW-HLG" = "DMW-HLG",
+  "High-Order(3-nodes)" = "High order",
+  "Low-Order(2-nodes)" = "Pairwise"
+)
 
 auc_label_df <- roc_summary %>%
   arrange(Model) %>%
   mutate(
-    label = paste0(model_labels[as.character(Model)], " AUC=", formatC(auc, format = "f", digits = 3)),
-    x = 0.97,
-    y = c(0.24, 0.16, 0.08)
+    label = paste0(auc_short_labels[as.character(Model)], " ", formatC(auc, format = "f", digits = 3)),
+    x = 0.95,
+    y = c(0.25, 0.16, 0.07)
   )
 
 p_c <- ggplot(roc_coords, aes(x = fpr, y = tpr, colour = Model)) +
@@ -364,7 +404,7 @@ p_c <- ggplot(roc_coords, aes(x = fpr, y = tpr, colour = Model)) +
     aes(x = x, y = y, label = label, colour = Model),
     inherit.aes = FALSE,
     hjust = 1,
-    size = 1.85,
+    size = FIG_AUC_TEXT_SIZE,
     family = "Arial"
   ) +
   scale_colour_manual(values = model_palette, breaks = model_levels, labels = model_labels) +
@@ -374,22 +414,31 @@ p_c <- ggplot(roc_coords, aes(x = fpr, y = tpr, colour = Model)) +
   labs(
     x = "False-positive rate",
     y = "True-positive rate",
-    title = "Pre-ictal vs early discrimination"
+    title = "<span style='font-size:12.5pt'><b>c</b></span>\u2003\u2003<b>ROC discrimination</b>"
   ) +
   guides(colour = "none") +
   theme_nature() +
   theme(
-    axis.text.x = element_text(size = 6.0),
-    axis.text.y = element_text(size = 6.0),
-    plot.margin = margin(4, 5, 4, 5)
+  axis.text.x = element_text(size = FIG_TEXT_PT),
+  axis.text.y = element_text(size = FIG_TEXT_PT),
+  plot.margin = margin(3, 2, 3, 1),
+  plot.title = ggtext::element_markdown(
+    size = FIG_TEXT_PT,
+    hjust = 0,
+    colour = "#202124",
+    margin = margin(t = 14, b = -10)
   )
+)
 
-fig <- p_a / (p_b | p_c) +
-  plot_layout(heights = c(1.42, 1), widths = c(1.08, 0.92)) +
-  plot_annotation(tag_levels = "a") &
+bottom_row <- wrap_plots(p_b, p_c, widths = c(1.48, 0.72))
+
+fig <- wrap_plots(
+  p_a, bottom_row,
+  ncol = 1,
+  heights = c(1.20, 1.00)
+) &
   theme(
-    plot.tag = element_text(size = 8.2, face = "bold", family = "Arial", colour = "#111111"),
-    plot.tag.position = c(0.012, 0.985)
+    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", family = "Arial", colour = "#111111", margin = margin(r = 3, b = 1))
   )
 
 save_pub <- function(plot, filename, width_mm = 183, height_mm = 128, dpi = 600) {
@@ -410,7 +459,7 @@ save_pub <- function(plot, filename, width_mm = 183, height_mm = 128, dpi = 600)
   dev.off()
 }
 
-base_file <- file.path(out_dir, "Fig8_eta_order_representation_comparison_method_first_label_clear_titlebold")
+base_file <- file.path(out_dir, "Fig8_eta_order_representation_comparison_method_first_label_clear_titlebold_font10p5_label12p5_microadjust")
 save_pub(fig, base_file)
 
 export_files <- paste0(base_file, c(".svg", ".pdf", ".png", ".tiff"))

@@ -1,10 +1,6 @@
 library(ggplot2)
-
-FIG_TEXT_PT <- 6
-FIG_PANEL_PT <- 8
-FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
-
 library(patchwork)
+library(ggtext)
 library(dplyr)
 library(tidyr)
 library(readr)
@@ -12,14 +8,36 @@ library(scales)
 library(svglite)
 library(ragg)
 
-args <- commandArgs(trailingOnly = FALSE)
-file_arg <- sub("^--file=", "", args[grepl("^--file=", args)])
-out_dir <- if (length(file_arg) > 0) {
-  dirname(normalizePath(file_arg[1], winslash = "/", mustWork = TRUE))
+FIG_TEXT_PT <- 10.5
+FIG_PANEL_PT <- 12.5
+FIG_INTERNAL_TEXT_PT <- 8.0
+FIG_GEOM_TEXT_SIZE <- FIG_INTERNAL_TEXT_PT / 2.845276
+FIG_DENSE_PT <- FIG_INTERNAL_TEXT_PT
+
+beta_italic_sym <- "<i>&beta;</i>"
+eta_italic_sym <- "<i>&eta;</i>"
+R_italic_sym <- "<i>R</i>"
+lambda1_italic_sym <- "<i>&lambda;</i><sub>1</sub>"
+c_italic_sym <- "<i>c</i>"
+h_italic_sym <- "<i>h</i>"
+
+
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
 } else {
-  file.path("figures", "Fig_9")
+  normalizePath(".", winslash = "/", mustWork = TRUE)
 }
-src_dir <- file.path(out_dir, "source_data")
+out_dir <- normalizePath(
+  Sys.getenv("FIG9_OUTPUT_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = FALSE
+)
+src_dir <- normalizePath(
+  Sys.getenv("FIG9_SOURCE_DIR", unset = file.path(script_dir, "source_data")),
+  winslash = "/",
+  mustWork = FALSE
+)
 
 trace_file <- file.path(src_dir, "HR_representative_traces_full.csv")
 plv_file <- file.path(src_dir, "HR_representative_plv_full.csv")
@@ -44,12 +62,13 @@ theme_set(
       axis.ticks = element_line(linewidth = 0.25, colour = "black"),
       axis.text = element_text(colour = "black", size = FIG_TEXT_PT),
       axis.title = element_text(colour = "black", size = FIG_TEXT_PT),
+      axis.title.y = element_text(margin = margin(r = 1.5)),
       plot.title = element_text(face = "bold", size = FIG_TEXT_PT, hjust = 0),
-      plot.subtitle = element_text(size = FIG_TEXT_PT, colour = "grey28", margin = margin(t = 0.5, b = 1.5)),
+      plot.subtitle = element_text(size = FIG_DENSE_PT, colour = "grey28", margin = margin(t = 0.5, b = 1.5)),
       plot.tag = element_text(face = "bold", size = FIG_PANEL_PT, colour = "black"),
       plot.tag.position = c(0.005, 0.995),
-      legend.title = element_text(size = FIG_TEXT_PT),
-      legend.text = element_text(size = FIG_TEXT_PT),
+      legend.title = element_text(size = FIG_DENSE_PT),
+      legend.text = element_text(size = FIG_DENSE_PT),
       legend.key.height = unit(2.5, "mm"),
       legend.key.width = unit(3.4, "mm"),
       strip.background = element_blank(),
@@ -83,7 +102,7 @@ drive_labeller <- function(beta_label) {
   factor(
     beta_label,
     levels = c("beta=0", "beta=1"),
-    labels = c("\u03b2 = 0", "\u03b2 = 1")
+    labels = paste0(beta_italic_sym, " = ", c(0, 1))
   )
 }
 
@@ -103,7 +122,7 @@ trace_plot_df <- trace_df %>%
 
 p_trace <- ggplot(trace_plot_df, aes(time, channel, fill = value_z)) +
   geom_raster(interpolate = FALSE) +
-  facet_grid(drive ~ ., switch = "y") +
+  facet_grid(drive ~ ., switch = "y", labeller = label_value) +
   scale_fill_gradient2(
     low = trace_low,
     mid = trace_mid,
@@ -125,8 +144,8 @@ p_trace <- ggplot(trace_plot_df, aes(time, channel, fill = value_z)) +
     expand = c(0, 0)
   ) +
   labs(
-    title = "Neural-signal simulation",
-    subtitle = "Representative HR membrane-potential activity",
+    title = "HR simulation",
+    subtitle = NULL,
     x = "Time (a.u.)",
     y = "Channel",
     tag = "a"
@@ -134,9 +153,9 @@ p_trace <- ggplot(trace_plot_df, aes(time, channel, fill = value_z)) +
   theme(
     legend.position = "right",
     strip.placement = "outside",
-    strip.text.y.left = element_text(angle = 0, margin = margin(r = 2)),
+    strip.text.y.left = ggtext::element_markdown(angle = 0, margin = margin(r = 1.5)),
     plot.tag = element_text(margin = margin(r = 2, b = 0)),
-    panel.spacing.y = unit(1.0, "mm")
+    panel.spacing.y = unit(2.0, "mm")
   )
 
 plv_plot_df <- plv_df %>%
@@ -144,7 +163,7 @@ plv_plot_df <- plv_df %>%
 
 p_plv <- ggplot(plv_plot_df, aes(source, target, fill = plv)) +
   geom_raster() +
-  facet_grid(drive ~ .) +
+  facet_grid(drive ~ ., labeller = label_value) +
   coord_equal(expand = FALSE) +
   scale_fill_gradientn(
     colours = c("#F8FBFE", "#BAD5EA", "#5E98CB", "#173B6D"),
@@ -152,31 +171,36 @@ p_plv <- ggplot(plv_plot_df, aes(source, target, fill = plv)) +
     oob = squish,
     name = "PLV",
     guide = guide_colorbar(
-      barheight = unit(15, "mm"),
-      barwidth = unit(2.2, "mm"),
+      direction = "horizontal",
+      barheight = unit(2.2, "mm"),
+      barwidth = unit(30, "mm"),
+      title.position = "top",
+      title.hjust = 0.5,
       ticks.linewidth = 0.25
     )
   ) +
   scale_x_continuous(breaks = c(1, 9, 18), expand = c(0, 0)) +
   scale_y_continuous(breaks = c(1, 9, 18), expand = c(0, 0)) +
   labs(
-    title = "Matched PLV input",
-    subtitle = "Same PLV-to-DMW-HLG pipeline",
+    title = "PLV input",
+    subtitle = NULL,
     x = "Channel",
     y = "Channel"
   ) +
   theme(
-    legend.position = "right",
-    legend.box.margin = margin(0, -1, 0, -7),
-    legend.margin = margin(0, 0, 0, 0),
-    legend.spacing.x = unit(0.1, "mm"),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box.margin = margin(-2, 0, 0, 0),
+    legend.margin = margin(-1, 0, 0, 0),
+    legend.spacing.y = unit(0, "mm"),
+    strip.text.y = ggtext::element_markdown(),
     plot.margin = margin(2.5, 0, 2.5, 3),
-    panel.spacing.y = unit(1.0, "mm")
+    panel.spacing.y = unit(2.0, "mm")
   )
 
 # ---------- Panel b: beta scan under the fixed construction ----------
 metric_levels <- c("mean_plv", "pair_density", "eta")
-metric_labels <- c("Mean PLV", "Pair-edge density", "\u03b7")
+metric_labels <- c("PLV", "Density", eta_italic_sym)
 
 beta_long <- beta_df %>%
   transmute(
@@ -216,7 +240,7 @@ trial_long <- trial_df %>%
   ) %>%
   mutate(metric = factor(metric, levels = metric_levels, labels = metric_labels))
 
-metric_cols <- c("Mean PLV" = blue, "Pair-edge density" = brown, "\u03b7" = navy)
+metric_cols <- setNames(c(blue, brown, navy), metric_labels)
 
 p_beta <- ggplot(beta_long, aes(beta, value, colour = metric, fill = metric)) +
   geom_point(
@@ -230,21 +254,23 @@ p_beta <- ggplot(beta_long, aes(beta, value, colour = metric, fill = metric)) +
   geom_line(linewidth = 0.50) +
   geom_errorbar(aes(ymin = value - sem, ymax = value + sem), width = 0.025, linewidth = 0.30) +
   geom_point(size = 1.45, stroke = 0.22, colour = "white", shape = 21) +
-  facet_grid(metric ~ ., scales = "free_y", switch = "y") +
+  facet_grid(metric ~ ., scales = "free_y", switch = "y", labeller = label_value) +
   scale_colour_manual(values = metric_cols, guide = "none") +
   scale_fill_manual(values = metric_cols, guide = "none") +
   scale_x_continuous(breaks = c(0, 0.5, 1), limits = c(-0.03, 1.03)) +
   labs(
-    title = "Fixed DMW-HLG readout",
-    subtitle = "\u03b7 diverges from synchrony and density",
-    x = "Epileptiform drive \u03b2",
+    title = "Fixed readout",
+    subtitle = NULL,
+    x = paste0("Drive ", beta_italic_sym),
     y = NULL,
     tag = "b"
   ) +
   theme(
     strip.placement = "outside",
-    strip.text.y.left = element_text(angle = 0, margin = margin(r = 2)),
-    panel.spacing.y = unit(1.2, "mm")
+    strip.text.y.left = ggtext::element_markdown(face = "bold", angle = 0, margin = margin(r = 1.5)),
+    axis.title.x = ggtext::element_markdown(size = FIG_TEXT_PT),
+    panel.spacing.y = unit(1.2, "mm"),
+    plot.margin = margin(3.5, 5.0, 3.5, 4.0)
   )
 
 # ---------- Panels c-d: structural mechanism maps and fixed-parameter slices ----------
@@ -283,11 +309,17 @@ map_df <- mech_df %>%
     metric = factor(
       metric,
       levels = c("eta", "resource", "lambda1"),
-      labels = c("\u03b7", "R", "\u03bb1")
+      labels = c(eta_italic_sym, R_italic_sym, lambda1_italic_sym)
     )
   )
 
 extract_legend <- function(plot) {
+  tmp <- tempfile(fileext = ".png")
+  ragg::agg_png(tmp, width = 2, height = 2, units = "in", res = 150, background = "white")
+  on.exit({
+    dev.off()
+    unlink(tmp)
+  }, add = TRUE)
   grob <- ggplotGrob(plot)
   guide_idx <- which(grepl("^guide-box", vapply(grob$grobs, function(x) x$name, character(1))))
   guide_idx <- guide_idx[!vapply(grob$grobs[guide_idx], inherits, logical(1), what = "zeroGrob")]
@@ -313,7 +345,7 @@ p_maps_base <- ggplot(map_df, aes(c, h, fill = value_scaled)) +
     colour = "grey12",
     alpha = 0.35
   ) +
-  facet_grid(. ~ metric) +
+  facet_grid(. ~ metric, labeller = label_value) +
   coord_equal(expand = FALSE) +
   scale_fill_gradientn(
     colours = c(phase_low, heat_low, phase_mid, phase_high),
@@ -335,9 +367,9 @@ p_maps_base <- ggplot(map_df, aes(c, h, fill = value_scaled)) +
   scale_y_continuous(breaks = c(0, 0.5, 1), expand = c(0, 0)) +
   labs(
     title = "Structural mechanism maps",
-    subtitle = "\u03b7, R and \u03bb1 respond differently across the same c-h parameter space",
-    x = "Core concentration c",
-    y = "Homogenization h",
+    subtitle = paste0(eta_italic_sym, ", ", R_italic_sym, " and ", lambda1_italic_sym, " respond differently across the same ", c_italic_sym, "-", h_italic_sym, " parameter space"),
+    x = paste0("Core concentration ", c_italic_sym),
+    y = paste0("Homogenization ", h_italic_sym),
     tag = "c"
   ) +
   theme(
@@ -345,10 +377,12 @@ p_maps_base <- ggplot(map_df, aes(c, h, fill = value_scaled)) +
     legend.box.spacing = unit(0.4, "mm"),
     legend.margin = margin(0, 0, 0, 0),
     panel.spacing.x = unit(4.0, "mm"),
-    strip.text = element_text(face = "bold", size = FIG_TEXT_PT),
+    strip.text = ggtext::element_markdown(face = "bold", size = FIG_TEXT_PT),
     axis.text.x = element_text(size = FIG_TEXT_PT),
-    axis.title.x = element_text(margin = margin(t = 1.0)),
-    axis.title.y = element_text(size = FIG_TEXT_PT, margin = margin(r = 1.0)),
+    axis.title.x = ggtext::element_markdown(size = FIG_TEXT_PT, margin = margin(t = 1.0)),
+    axis.title.y = ggtext::element_markdown(size = FIG_TEXT_PT, margin = margin(r = 1.5)),
+    plot.subtitle = ggtext::element_markdown(size = FIG_DENSE_PT, colour = "grey28", margin = margin(t = 0.5, b = 1.5)),
+    plot.tag.position = c(0.16, 0.995),
     plot.margin = margin(2.5, 2, 2.5, 3)
   )
 
@@ -367,9 +401,10 @@ p_maps_legend <- wrap_elements(
 p_maps <- (
   p_maps_base +
     guides(fill = "none") +
-    theme(plot.margin = margin(2.5, 1, 2.5, 3))
+    theme(plot.margin = margin(3.5, 2.5, 3.5, 4.5))
 ) + p_maps_legend + plot_spacer()
 p_maps <- p_maps + plot_layout(nrow = 1, widths = c(1, 0.085, 0.23))
+p_maps <- p_maps + plot_annotation(theme = theme(plot.margin = margin(2.5, 5.0, 2.5, 5.0)))
 
 fixed_h_df <- bind_rows(lapply(seq_along(closest_h), function(i) {
   mech_df %>%
@@ -387,7 +422,7 @@ fixed_h_df <- bind_rows(lapply(seq_along(closest_h), function(i) {
     metric = factor(
       metric,
       levels = c("resource", "lambda1", "eta"),
-      labels = c("R", "\u03bb1", "\u03b7")
+      labels = c(R_italic_sym, lambda1_italic_sym, eta_italic_sym)
     ),
     slice_type = factor("Fixed h, varying c", levels = c("Fixed h, varying c", "Fixed c, varying h")),
     fixed_level = factor(fixed_level, levels = sprintf("%.2f", slice_levels))
@@ -409,7 +444,7 @@ fixed_c_df <- bind_rows(lapply(seq_along(closest_c), function(i) {
     metric = factor(
       metric,
       levels = c("resource", "lambda1", "eta"),
-      labels = c("R", "\u03bb1", "\u03b7")
+      labels = c(R_italic_sym, lambda1_italic_sym, eta_italic_sym)
     ),
     slice_type = factor("Fixed c, varying h", levels = c("Fixed h, varying c", "Fixed c, varying h")),
     fixed_level = factor(fixed_level, levels = sprintf("%.2f", slice_levels))
@@ -425,9 +460,10 @@ make_slice_panel <- function(slice_label, metric_label, row_label = NULL, show_t
     geom_line(linewidth = 0.42) +
     geom_point(size = 0.70, stroke = 0.22, shape = 21, fill = "white") +
     scale_colour_manual(values = setNames(slice_cols, sprintf("%.2f", slice_levels)), name = "Fixed level") +
-    scale_x_continuous(breaks = c(0, 0.5, 1), limits = c(0, 1)) +
+    scale_x_continuous(breaks = c(0, 0.5, 1), limits = c(-0.02, 1.04), expand = c(0, 0)) +
+    coord_cartesian(clip = "off") +
     labs(
-      title = if (show_title) as.character(metric_label) else NULL,
+      title = if (show_title) metric_label else NULL,
       x = if (show_x) "Varied structural parameter" else NULL,
       y = row_label
     ) +
@@ -436,37 +472,37 @@ make_slice_panel <- function(slice_label, metric_label, row_label = NULL, show_t
       legend.margin = margin(t = -0.5, b = -2),
       legend.key.width = unit(4.6, "mm"),
       legend.spacing.x = unit(1.2, "mm"),
-      plot.title = element_text(face = "bold", size = FIG_TEXT_PT, hjust = 0.5, margin = margin(b = 1.2)),
+      plot.title = ggtext::element_markdown(face = "bold", size = FIG_TEXT_PT, hjust = 0.5, margin = margin(b = 1.2)),
       axis.title.x = element_text(size = FIG_TEXT_PT, margin = margin(t = 1.0)),
-      axis.title.y = element_text(face = "bold", size = FIG_TEXT_PT, angle = 0, margin = margin(r = 2.2)),
+      axis.title.y = ggtext::element_markdown(face = "bold", size = FIG_TEXT_PT, angle = 0, margin = margin(r = 1.5)),
       axis.text.x = element_text(size = FIG_TEXT_PT),
-      plot.margin = margin(1.0, 2.3, 1.0, 2.3)
+      plot.margin = margin(1.3, 5.2, 1.3, 3.4)
     )
 }
 
 p_slice_header <- ggplot() +
   labs(
     title = "Fixed-parameter slices",
-    subtitle = "Raw metric values across matched c-h trajectories",
+    subtitle = paste0("Raw metric values across matched ", c_italic_sym, "-", h_italic_sym, " trajectories"),
     tag = "d"
   ) +
   theme_void(base_family = "Arial") +
   theme(
     plot.title = element_text(face = "bold", size = FIG_TEXT_PT, hjust = 0, colour = "black"),
-    plot.subtitle = element_text(size = FIG_TEXT_PT, colour = "grey28", margin = margin(t = 0.5, b = 1.5)),
+    plot.subtitle = ggtext::element_markdown(size = FIG_DENSE_PT, colour = "grey28", margin = margin(t = 0.5, b = 1.5)),
     plot.tag = element_text(face = "bold", size = FIG_PANEL_PT, colour = "black"),
     plot.tag.position = c(0.005, 0.995),
-    plot.margin = margin(1.5, 3, 0.5, 3)
+    plot.margin = margin(2.5, 5, 1.0, 5)
   )
 
 p_slice_grid <- (
-  make_slice_panel("Fixed h, varying c", "R", "Fixed h,\nvarying c", TRUE, FALSE) +
-    make_slice_panel("Fixed h, varying c", "\u03bb1", NULL, TRUE, FALSE) +
-    make_slice_panel("Fixed h, varying c", "\u03b7", NULL, TRUE, FALSE)
+  make_slice_panel("Fixed h, varying c", R_italic_sym, paste0("Fixed ", h_italic_sym, ",<br>varying ", c_italic_sym), TRUE, FALSE) +
+    make_slice_panel("Fixed h, varying c", lambda1_italic_sym, NULL, TRUE, FALSE) +
+    make_slice_panel("Fixed h, varying c", eta_italic_sym, NULL, TRUE, FALSE)
 ) / (
-  make_slice_panel("Fixed c, varying h", "R", "Fixed c,\nvarying h", FALSE, FALSE) +
-    make_slice_panel("Fixed c, varying h", "\u03bb1", NULL, FALSE, TRUE) +
-    make_slice_panel("Fixed c, varying h", "\u03b7", NULL, FALSE, FALSE)
+  make_slice_panel("Fixed c, varying h", R_italic_sym, paste0("Fixed ", c_italic_sym, ",<br>varying ", h_italic_sym), FALSE, FALSE) +
+    make_slice_panel("Fixed c, varying h", lambda1_italic_sym, NULL, FALSE, TRUE) +
+    make_slice_panel("Fixed c, varying h", eta_italic_sym, NULL, FALSE, FALSE)
 )
 p_slice_grid <- p_slice_grid +
   plot_layout(guides = "collect", widths = c(1, 1, 1), heights = c(1, 1)) &
@@ -474,13 +510,35 @@ p_slice_grid <- p_slice_grid +
 
 p_slices <- p_slice_header / p_slice_grid
 p_slices <- p_slices + plot_layout(heights = c(0.06, 1))
+p_slices <- p_slices + plot_annotation(theme = theme(plot.margin = margin(2.5, 5.0, 3.0, 5.0)))
 
-top_row <- wrap_plots(p_trace, p_plv, p_beta, nrow = 1, widths = c(1.02, 0.70, 0.86))
+plv_legend <- wrap_elements(
+  full = extract_legend(
+    p_plv +
+      theme(
+        legend.position = "bottom",
+        legend.box.margin = margin(0, 0, 0, 0),
+        legend.margin = margin(0, 0, 0, 0),
+        plot.margin = margin(0, 0, 0, 0)
+      )
+  )
+)
+plv_body <- p_plv +
+  guides(fill = "none") +
+  theme(plot.margin = margin(3.5, 1.5, 1.0, 4.0))
+plv_panel <- plv_body / plv_legend
+plv_panel <- plv_panel + plot_layout(heights = c(1, 0.13))
 
-fig <- top_row / p_maps / p_slices
-fig <- fig + plot_layout(heights = c(1.05, 0.58, 1.08))
+panel_a <- wrap_plots(p_trace, plv_panel, nrow = 1, widths = c(0.88, 0.76))
+panel_a <- panel_a + plot_annotation(theme = theme(plot.margin = margin(3.5, 4.0, 3.5, 4.0)))
+top_row <- wrap_plots(panel_a, plot_spacer(), p_beta, nrow = 1, widths = c(1.62, 0.16, 1.12))
+top_row <- top_row + plot_annotation(theme = theme(plot.margin = margin(4.0, 5.0, 4.5, 5.0)))
 
-save_pub <- function(plot, filename, width_mm = 183, height_mm = 190, dpi = 600) {
+fig <- top_row / plot_spacer() / p_maps / plot_spacer() / p_slices
+fig <- fig + plot_layout(heights = c(1.12, 0.085, 0.58, 0.105, 1.08))
+fig <- fig + plot_annotation(theme = theme(plot.margin = margin(5.0, 7.5, 5.0, 7.5)))
+
+save_pub <- function(plot, filename, width_mm = 183, height_mm = 198, dpi = 600) {
   w <- width_mm / 25.4
   h <- height_mm / 25.4
 
@@ -509,7 +567,7 @@ save_pub <- function(plot, filename, width_mm = 183, height_mm = 190, dpi = 600)
   dev.off()
 }
 
-base <- file.path(out_dir, "Fig9_HR_mechanism_eta_not_density_font6_label8")
+base <- file.path(out_dir, "Fig9_HR_mechanism_eta_not_density_font10p5_label12p5_microadjust_moregap")
 save_pub(fig, base)
 
 beta0 <- beta_df %>% filter(beta == min(beta))
@@ -537,7 +595,7 @@ qa_note <- c(
   "Control-variable note: HR signals are converted to PLV input and then passed through the same DMW-HLG construction used for SEEG; the construction itself is not changed.",
   "Structural-map note: eta, R and lambda1 heatmaps use within-metric min-max scaling for pattern comparison; raw ranges are eta 0.765-0.978, R 3.57-17.0 and lambda1 4.15-18.8.",
   "Fixed-slice note: panel d uses five fixed levels, 0.10, 0.30, 0.50, 0.70 and 0.90, for both h and c; curves show raw metric values rather than normalized values.",
-  "Review-risk note: the pair-edge density is nearly controlled but shows a small high-beta drift, consistent with PLV ties in the seizure-specific elbow-thresholded construction.",
+  "Review-risk note: the pair-edge density is nearly controlled but shows a small high-beta drift, consistent with PLV ties in the quantile-thresholded construction.",
   "Exports: PNG, SVG, PDF and high-resolution TIFF."
 )
 writeLines(qa_note, file.path(out_dir, "Fig9_QA_notes.txt"))

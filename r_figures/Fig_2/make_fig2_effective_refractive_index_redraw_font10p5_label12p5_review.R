@@ -8,20 +8,29 @@ suppressPackageStartupMessages({
   library(R.matlab)
   library(svglite)
   library(ragg)
+  library(ggtext)
   library(grid)
   library(scales)
 })
 
-FIG_TEXT_PT <- 6.2
-FIG_PANEL_PT <- 8.0
+FIG_TEXT_PT <- 10.5
+FIG_PANEL_PT <- 12.5
 FIG_GEOM_TEXT_SIZE <- FIG_TEXT_PT / 2.845276
 
-base_candidates <- Sys.glob("example_project/*0514-/nature_fig/Fig_2")
-if (length(base_candidates) < 1) {
-  stop("Cannot locate Fig_2 directory under example_project/*0514-/nature_fig/Fig_2")
+
+
+file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_dir <- if (length(file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = TRUE))
+} else {
+  normalizePath(".", winslash = "/", mustWork = TRUE)
 }
-base_dir <- normalizePath(base_candidates[1], winslash = "/", mustWork = TRUE)
-out_base <- file.path(base_dir, "Fig2_effective_refractive_index_increases_redraw")
+base_dir <- normalizePath(
+  Sys.getenv("FIG2_DATA_DIR", unset = script_dir),
+  winslash = "/",
+  mustWork = TRUE
+)
+out_base <- file.path(base_dir, "Fig2_effective_refractive_index_increases_redraw_font10p5_label12p5_review")
 
 phase_levels <- c("pre-ictal", "early", "mid", "late", "post-ictal")
 phase_labels <- c("Pre", "Early", "Mid", "Late", "Post")
@@ -44,17 +53,19 @@ phase3_cols <- c(
 )
 
 eta_sym <- "\u03b7"
-delta_sym <- "\u0394"
-density_sym <- "\u03b4\u00b2"
+eta_italic_sym <- "\U0001D702"
+eta_bolditalic_sym <- "\U0001D73C"
+delta_upper_italic_sym <- "\U0001D6E5"
+delta_lower_italic_sym <- "\U0001D6FF"
 
 theme_nature <- function(base_size = FIG_TEXT_PT) {
   theme_classic(base_size = base_size, base_family = "Arial") +
     theme(
       axis.line = element_line(linewidth = 0.32, colour = "#202124"),
       axis.ticks = element_line(linewidth = 0.28, colour = "#202124"),
-      axis.text = element_text(size = base_size, colour = "#202124"),
-      axis.title = element_text(size = base_size, colour = "#202124"),
-      plot.title = element_text(size = base_size, face = "bold", hjust = 0),
+      axis.text = element_text(size = FIG_TEXT_PT, colour = "#202124"),
+      axis.title = element_text(size = FIG_TEXT_PT, colour = "#202124"),
+      plot.title = element_text(size = FIG_TEXT_PT, face = "bold", hjust = 0),
       legend.position = "none",
       panel.grid.major = element_line(linewidth = 0.16, colour = "#ECEFF3"),
       panel.grid.minor = element_blank(),
@@ -77,6 +88,10 @@ format_p <- function(p) {
   ifelse(p < 0.001, "P<0.001", paste0("P=", signif(p, 2)))
 }
 
+format_p_math <- function(p) {
+  ifelse(p < 0.001, "italic(P)<0.001", paste0("italic(P)==", signif(p, 2)))
+}
+
 ci_one_sample <- function(x) {
   x <- x[is.finite(x)]
   if (length(x) < 2 || stats::sd(x) == 0) {
@@ -91,7 +106,7 @@ eta_stage <- read_csv(file.path(base_dir, "ALL_CASES_stage5_eta.csv"), show_col_
     phase_label = factor(phase_labels[as.integer(phase5)], levels = phase_labels)
   )
 
-eta_window <- read_csv(file.path(base_dir, "seizure_01_window_level_eta.csv"), show_col_types = FALSE) %>%
+eta_window <- read_csv(file.path(base_dir, "representative_window_level_eta.csv"), show_col_types = FALSE) %>%
   mutate(
     phase5 = factor(phase5, levels = phase_levels),
     phase_label = factor(phase_labels[as.integer(phase5)], levels = phase_labels)
@@ -140,7 +155,12 @@ paired_stats <- delta_long %>%
   mutate(
     p_holm = p.adjust(p_wilcox, method = "holm"),
     stars = stars_from_p(p_holm),
-    p_label = paste0(stars, "  ", format_p(p_holm))
+    p_label = paste0(stars, "  ", format_p(p_holm)),
+    p_label_math = ifelse(
+      stars == "",
+      format_p_math(p_holm),
+      paste0("'", stars, "'~", format_p_math(p_holm))
+    )
   )
 
 write_csv(stage_summary, file.path(base_dir, "Fig2_redraw_stage_summary.csv"))
@@ -164,6 +184,7 @@ transition_x <- stage_bounds %>%
 eta_ymax <- max(eta_window$eta, na.rm = TRUE)
 eta_ymin <- min(eta_window$eta, na.rm = TRUE)
 eta_pad <- 0.10 * (eta_ymax - eta_ymin)
+stage_label_y <- eta_ymin - eta_pad * 0.70
 
 p_a <- ggplot(eta_window, aes(window_idx, eta)) +
   geom_rect(
@@ -175,16 +196,20 @@ p_a <- ggplot(eta_window, aes(window_idx, eta)) +
   geom_vline(xintercept = transition_x, linetype = "22", linewidth = 0.28, colour = "#8A8F98") +
   geom_text(
     data = stage_bounds,
-    aes(x = xmid, y = eta_ymax + eta_pad * 0.34, label = phase_label),
+    aes(x = xmid, y = stage_label_y, label = phase_label),
     inherit.aes = FALSE, size = FIG_GEOM_TEXT_SIZE, family = "Arial",
-    fontface = "bold", colour = "#202124"
+    fontface = "plain", colour = "#202124"
   ) +
   scale_fill_manual(values = phase_cols) +
   coord_cartesian(ylim = c(eta_ymin - eta_pad, eta_ymax + eta_pad * 0.70), clip = "off") +
   labs(
-    title = paste0("Representative seizure: time-resolved ", eta_sym),
+    title = paste0("<b>Representative seizure: time-resolved</b> <b><i>", eta_sym, "</i></b>"),
     x = "Time windows",
-    y = paste0("Effective refractive index, ", eta_sym)
+    y = eta_italic_sym
+  ) +
+  theme(
+    plot.title = ggtext::element_markdown(size = FIG_TEXT_PT, hjust = 0, colour = "#202124"),
+    axis.title.y = element_text(size = FIG_TEXT_PT, face = "plain", colour = "#202124")
   )
 
 p_b <- ggplot(eta_stage, aes(phase_label, eta_mean, group = case_id)) +
@@ -207,14 +232,18 @@ p_b <- ggplot(eta_stage, aes(phase_label, eta_mean, group = case_id)) +
   ) +
   scale_fill_manual(values = phase_cols) +
   labs(
-    title = paste0("Stage-wise ", eta_sym, " across seizures"),
+    title = paste0("<b>Stage-wise</b> <b><i>", eta_sym, "</i></b>"),
     x = NULL,
-    y = paste0("Stage mean ", eta_sym)
+    y = paste0("Stage mean ", eta_italic_sym)
+  ) +
+  theme(
+    plot.title = ggtext::element_markdown(size = FIG_TEXT_PT, hjust = 0, colour = "#202124"),
+    axis.title.y = element_text(size = FIG_TEXT_PT, face = "plain", colour = "#202124")
   )
 
 delta_xlim <- range(delta_long$delta_eta, paired_stats$ci_low, paired_stats$ci_high, na.rm = TRUE)
-delta_pad <- diff(delta_xlim) * 0.24
-label_x <- delta_xlim[2] + delta_pad * 0.55
+delta_pad <- diff(delta_xlim) * 0.26
+label_x <- delta_xlim[2] + delta_pad * 1.08
 
 p_c <- ggplot(delta_long, aes(delta_eta, phase_label, fill = phase5)) +
   geom_vline(xintercept = 0, linetype = "22", linewidth = 0.28, colour = "#7A828C") +
@@ -232,31 +261,35 @@ p_c <- ggplot(delta_long, aes(delta_eta, phase_label, fill = phase5)) +
     aes(mean_diff, phase_label, fill = phase5),
     inherit.aes = FALSE, shape = 23, size = 2.35, stroke = 0.34, colour = "#202124"
   ) +
-  geom_text(
+  geom_label(
     data = paired_stats,
-    aes(x = label_x, y = phase_label, label = p_label),
-    inherit.aes = FALSE, family = "Arial", size = FIG_GEOM_TEXT_SIZE * 0.92,
-    hjust = 0, colour = "#202124"
+    aes(x = label_x, y = phase_label, label = p_label_math),
+    inherit.aes = FALSE, family = "Arial", size = FIG_GEOM_TEXT_SIZE,
+    hjust = 1, colour = "#202124", fill = alpha("white", 0.88),
+    linewidth = 0, label.padding = unit(0.05, "lines"),
+    position = position_nudge(y = -0.28),
+    parse = TRUE
   ) +
   scale_fill_manual(values = phase_cols[effect_levels]) +
-  coord_cartesian(xlim = c(delta_xlim[1] - delta_pad * 0.25, label_x + delta_pad * 0.95), clip = "off") +
+  scale_y_discrete(expand = expansion(mult = c(0.16, 0.16))) +
+  coord_cartesian(xlim = c(delta_xlim[1] - delta_pad * 0.25, label_x + delta_pad * 0.16), clip = "on") +
   labs(
-    title = paste0("Paired effect relative to Pre"),
-    x = paste0(delta_sym, eta_sym, " relative to Pre"),
+    title = "Paired effect",
+    x = paste0(delta_upper_italic_sym, eta_italic_sym, " relative to Pre"),
     y = NULL
   ) +
   theme(
-    plot.margin = margin(2.8, 9.5, 2.8, 3.2)
+    axis.title.x = element_text(size = FIG_TEXT_PT, face = "plain", colour = "#202124"),
+    plot.margin = margin(2.8, 4.0, 2.8, 3.2)
   )
 
 mat_dir <- file.path(base_dir, "seizure_data")
 mat_files <- list.files(mat_dir, pattern = "\\.mat$", full.names = TRUE)
-skip_files <- c("example_state_skip_01", "example_state_skip_02",
-                "example_state_skip_03", "example_state_skip_04")
+exclude_files <- c("gwh_s2", "ssh_s3", "ssh_s5", "ssh_s6")
 
 read_stage_mat <- function(path) {
   name <- tools::file_path_sans_ext(basename(path))
-  if (name %in% skip_files) return(NULL)
+  if (name %in% exclude_files) return(NULL)
   obj <- readMat(path)
   pid <- strsplit(name, "_", fixed = TRUE)[[1]][1]
   pre <- as.numeric(obj[["stage.pre"]][1, ])
@@ -305,20 +338,20 @@ state_centres <- state_norm %>%
 state_labels <- state_centres %>%
   mutate(
     label_x = case_when(
-      phase3 == "pre-ictal" ~ density_z - 0.30,
-      phase3 == "ictal" ~ density_z + 0.60,
-      TRUE ~ density_z - 0.78
+      phase3 == "pre-ictal" ~ density_z - 0.44,
+      phase3 == "ictal" ~ density_z + 0.72,
+      TRUE ~ density_z - 0.92
     ),
     label_y = case_when(
-      phase3 == "pre-ictal" ~ eta_z + 0.24,
-      phase3 == "ictal" ~ eta_z + 0.34,
-      TRUE ~ eta_z + 0.08
+      phase3 == "pre-ictal" ~ eta_z + 0.28,
+      phase3 == "ictal" ~ eta_z + 0.40,
+      TRUE ~ eta_z + 0.12
     )
   )
 
 state_xlim <- range(state_norm$density_z, na.rm = TRUE)
 state_ylim <- range(state_norm$eta_z, na.rm = TRUE)
-state_pad <- max(diff(state_xlim), diff(state_ylim)) * 0.09
+state_pad <- max(diff(state_xlim), diff(state_ylim)) * 0.12
 state_xlim <- state_xlim + c(-state_pad, state_pad)
 state_ylim <- state_ylim + c(-state_pad, state_pad)
 
@@ -345,8 +378,8 @@ p_d <- ggplot(state_norm, aes(density_z, eta_z)) +
   geom_label(
     data = state_labels,
     aes(label_x, label_y, label = phase_label),
-    inherit.aes = FALSE, family = "Arial", size = FIG_GEOM_TEXT_SIZE * 0.95,
-    fontface = "bold", colour = "#202124", fill = alpha("white", 0.88),
+    inherit.aes = FALSE, family = "Arial", size = FIG_GEOM_TEXT_SIZE,
+    fontface = "plain", colour = "#202124", fill = alpha("white", 0.88),
     linewidth = 0, label.padding = unit(0.10, "lines")
   ) +
   scale_fill_manual(values = phase3_cols) +
@@ -354,27 +387,31 @@ p_d <- ggplot(state_norm, aes(density_z, eta_z)) +
   scale_shape_manual(values = c("pre-ictal" = 21, "ictal" = 22, "post-ictal" = 24)) +
   coord_cartesian(xlim = state_xlim, ylim = state_ylim, clip = "off") +
   labs(
-    title = paste0("Propagation-medium state space"),
-    x = paste0("Generalized density, ", density_sym, " (z-score)"),
-    y = paste0(eta_sym, " (z-score)")
+    title = "State space",
+    x = paste0(delta_lower_italic_sym, "\u00b2 (z-score)"),
+    y = paste0(eta_italic_sym, " (z-score)")
+  ) +
+  theme(
+    axis.title = element_text(size = FIG_TEXT_PT, face = "plain", colour = "#202124"),
+    plot.margin = margin(2.8, 6.0, 2.8, 3.2)
   )
 
 layout_design <- "
-AAAAAA
-AAAAAA
-BBCCDD
-BBCCDD
+AAAAAAAAA
+AAAAAAAAA
+BBBCCCDDD
+BBBCCCDDD
 "
 
 fig <- p_a + p_b + p_c + p_d +
   plot_layout(
     design = layout_design,
     heights = c(0.72, 0.72, 1.00, 1.00),
-    widths = rep(1, 6)
+    widths = rep(1, 9)
   ) +
   plot_annotation(tag_levels = "a") &
   theme(
-    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", family = "Arial", colour = "#202124"),
+    plot.tag = element_text(size = FIG_PANEL_PT, face = "bold", family = "Arial", colour = "#202124", margin = margin(r = 3, b = 1)),
     plot.tag.position = c(0.010, 0.990)
   )
 

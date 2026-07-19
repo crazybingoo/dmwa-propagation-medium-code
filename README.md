@@ -1,6 +1,6 @@
 # DMWA Propagation Medium Code and Source Data
 
-This repository contains the current analysis and figure code for Fig. 2–Fig. 9 and Supplementary Fig. 1–Supplementary Fig. 5 of the manuscript on directed higher-order propagation-medium reorganization in epileptic seizures.
+This repository contains the current analysis and figure code for Fig. 2–Fig. 9 and Supplementary Fig. 1–Supplementary Fig. 4 of the manuscript on directed higher-order propagation-medium reorganization in epileptic seizures.
 
 ## Contents
 
@@ -23,7 +23,7 @@ The final figure versions use 10.5-pt main text and 12.5-pt panel labels.
 - Fig. 8: run `r_figures/Fig_8/render_fig8c_order_labels.R`
 - Fig. 9: `r_figures/Fig_9/draw_fig9_hr_mechanism_final.R`
 
-The supplementary-figure scripts are located in the corresponding `r_figures/Supplementary_Fig_*` directories.
+The Supplementary Fig. 1–4 scripts are located in the corresponding `r_figures/Supplementary_Fig_*` directories.
 
 Scripts resolve their own directory by default. Approved users can override input/output locations with the environment variables documented in each script, such as `FIG2_DATA_DIR`, `FIG5_DATA_DIR`, `FIG8_SOURCE_DIR`, or `FIG9_SOURCE_DIR`. No personal workstation paths are embedded in the public code.
 

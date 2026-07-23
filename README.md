@@ -4,11 +4,11 @@ This repository contains the current analysis and figure code for Fig. 2–Fig. 
 
 ## Contents
 
-- `Source_Data.xlsx`: de-identified numerical source data underlying every figure panel. Each panel has an independent worksheet; Fig. 9a uses separate trace and PLV worksheets.
+- `Source_Data.xlsx`: de-identified numerical source data underlying Fig. 2–Fig. 9, Supplementary Fig. 1–Supplementary Fig. 4 and Supplementary Tables 1–3. Each figure or table has one worksheet; figure panels are stacked as labelled data blocks within the corresponding figure worksheet.
 - `matlab/`: MATLAB scripts for the DMWA, control, robustness, representation-comparison and simulation analyses.
 - `r_figures/`: R scripts for the final manuscript and Supplementary Information figures.
 
-The workbook contains a `README`, a panel-to-sheet `Data_Map`, and a `Data_Dictionary`. Analysis units are stated explicitly because they differ across panels.
+The workbook contains a `README`, a figure/table-to-range `Data_Map`, and a panel-aware `Data_Dictionary`. Analysis units are stated explicitly because they differ across panels and tables.
 
 ## Final R figure scripts
 
@@ -29,7 +29,7 @@ Scripts resolve their own directory by default. Approved users can override inpu
 
 ## Data availability and privacy boundary
 
-`Source_Data.xlsx` contains only de-identified, derived numerical values used for the figures and statistical summaries. Seizures are labelled `Seizure 01`–`Seizure 24`, and patients are labelled `P01`–`P14`. The private linkage keys are not included.
+`Source_Data.xlsx` contains only de-identified, derived numerical values used for the figures, statistical summaries and Supplementary Tables. Seizures are labelled `Seizure 01`–`Seizure 24`, and patients are labelled `P01`–`P14` or `P1`–`P14` according to the reporting context. The private linkage keys are not included.
 
 The repository intentionally excludes:
 

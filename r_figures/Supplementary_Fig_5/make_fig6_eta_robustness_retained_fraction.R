@@ -402,7 +402,7 @@ writeLines(result_text, file.path(out_dir, "Fig6_retained_fraction_results_descr
 
 qa_lines <- c(
   "Fig. 6 retained-fraction QA notes",
-  "Core conclusion: the DMWA-derived effective refractive index eta remains higher during ictal than pre-ictal periods across broad retained PLV edge fractions, but the effect attenuates at very dense scaffolds.",
+  "Core conclusion: the DMWA-derived propagation medium parameter eta remains higher during ictal than pre-ictal periods across broad retained PLV edge fractions, but the effect attenuates at very dense scaffolds.",
   "Archetype: quantitative grid with paired heatmaps plus summary panels.",
   "Backend: R only; ggplot2 + patchwork + svglite/cairo_pdf/ragg.",
   "Source grid: 50 settings; window lengths 1, 2, 3, 4, 5 s; retained PLV edge fractions 0.45 to 0.90.",

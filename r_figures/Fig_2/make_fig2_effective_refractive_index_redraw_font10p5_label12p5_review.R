@@ -442,7 +442,7 @@ save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 118, dpi = 60
 save_pub_r(fig, out_base)
 
 legend_text <- paste0(
-  "Fig. 2 | Effective refractive index increases during seizures.\n",
+  "Fig. 2 | propagation medium parameter increases during seizures.\n",
   "a, Time-resolved ", eta_sym, " for a representative seizure, with shaded windows indicating pre-ictal, early, mid, late and post-ictal stages. ",
   "b, Stage-resolved ", eta_sym, " across 24 seizures. Thin grey lines denote seizure-level paired trajectories; small points denote individual seizure-stage means, and large outlined points with error bars denote cohort means and 95% confidence intervals. ",
   "c, Paired stage effects in ", eta_sym, " relative to the pre-ictal baseline. Small points denote seizure-level paired differences; diamonds and horizontal intervals denote cohort mean differences and 95% confidence intervals. Asterisks and P values indicate two-sided paired Wilcoxon signed-rank tests against zero with Holm correction. ",
@@ -453,7 +453,7 @@ legend_text <- paste0(
 writeLines(legend_text, file.path(base_dir, "Fig2_redraw_legend_draft.txt"), useBytes = TRUE)
 
 qa_lines <- c(
-  "Core conclusion: the DMWA-derived effective refractive index eta increases from the pre-ictal baseline during seizure and post-ictal stages, and the increase accompanies a generalized-density/eta state-space shift.",
+  "Core conclusion: the DMWA-derived propagation medium parameter eta increases from the pre-ictal baseline during seizure and post-ictal stages, and the increase accompanies a generalized-density/eta state-space shift.",
   "Figure archetype: asymmetric quantitative composite with a full-width representative time series and three compact cohort-level evidence panels.",
   "Backend: R only; ggplot2/patchwork/ggbeeswarm/R.matlab/svglite/cairo_pdf/ragg.",
   "Export: SVG/PDF/TIFF/PNG at double-column width.",

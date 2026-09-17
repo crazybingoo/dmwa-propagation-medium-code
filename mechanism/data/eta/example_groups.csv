@@ -1,0 +1,13 @@
+model,group,regions
+Chain-attached,1,1-2
+Chain-attached,2,1-3
+Chain-attached,3,2-3
+Chain-attached,4,3-4
+Chain-attached,5,4-5
+Chain-attached,6,1-2-3
+Hub-attached,1,1-2
+Hub-attached,2,1-3
+Hub-attached,3,2-3
+Hub-attached,4,1-4
+Hub-attached,5,1-5
+Hub-attached,6,1-2-3

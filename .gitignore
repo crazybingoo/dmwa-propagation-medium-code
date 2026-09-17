@@ -72,3 +72,19 @@ exports/
 
 # The publication source-data workbook is intentionally tracked.
 !Source_Data.xlsx
+
+# Versioned, de-identified mechanism inputs and publication results.
+!mechanism/data/
+!mechanism/data/w/
+!mechanism/data/w/*.csv
+!mechanism/data/eta/
+!mechanism/data/eta/*.csv
+!mechanism/data/eta/matrices/
+!mechanism/data/eta/matrices/*.npz
+mechanism/data/eta/patient_trajectories.csv
+mechanism/data/eta/source_manifest.csv
+mechanism/data/w/acceptance.json
+mechanism/reports/
+__pycache__/
+*.pyc
+node_modules/

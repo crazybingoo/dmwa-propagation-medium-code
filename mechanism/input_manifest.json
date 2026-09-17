@@ -1,0 +1,606 @@
+{
+  "count": 120,
+  "format": "SciPy sparse CSR NPZ; derived DMWA weights only",
+  "matrices": [
+    {
+      "path": "data/eta/matrices/S01_Early_W.npz",
+      "sha256": "149378926c769c983f771ed3a1fb8c81345e80a82e06c44db835e1c848a6aec4",
+      "bytes": 56640
+    },
+    {
+      "path": "data/eta/matrices/S01_Late_W.npz",
+      "sha256": "ae0641ff388fdc177c1237a0607ad841b235f8e5b36555e0df5ae82309927560",
+      "bytes": 87874
+    },
+    {
+      "path": "data/eta/matrices/S01_Mid_W.npz",
+      "sha256": "48e01dc82420cb748dec24d5462d9bcb65063d6ecc021e91ef116969bfa50595",
+      "bytes": 68237
+    },
+    {
+      "path": "data/eta/matrices/S01_Post_W.npz",
+      "sha256": "8d6d4d44764900b1e70b6bfe6cc420c14adb17bcb5f2e96a22f6f353d836584f",
+      "bytes": 107553
+    },
+    {
+      "path": "data/eta/matrices/S01_Pre_W.npz",
+      "sha256": "e965fc9910f85dc0f40122f48058525dc88cfe0fd33a35cb644a9adbce0f49f1",
+      "bytes": 68711
+    },
+    {
+      "path": "data/eta/matrices/S02_Early_W.npz",
+      "sha256": "4dd74227be0531dde83cac951a29921a9381153c094aeaf2c2297ebbe9f847b9",
+      "bytes": 89593
+    },
+    {
+      "path": "data/eta/matrices/S02_Late_W.npz",
+      "sha256": "895a1d1613dedb205067be460d5165e9fa16abb1049d3108bfff24590fa6ac3a",
+      "bytes": 95148
+    },
+    {
+      "path": "data/eta/matrices/S02_Mid_W.npz",
+      "sha256": "40faa9789b49725e28d8b2eafb90cfe95724edd34774a85eb5b36dda200847a2",
+      "bytes": 71602
+    },
+    {
+      "path": "data/eta/matrices/S02_Post_W.npz",
+      "sha256": "926b117c4f7786a0c54738c358f51c1464694d07a6092e371bde4950e1b24429",
+      "bytes": 63774
+    },
+    {
+      "path": "data/eta/matrices/S02_Pre_W.npz",
+      "sha256": "7d817953187ad33a34853dbdc00e5d60ccc843bc939701c18c3c96fb855dbc1b",
+      "bytes": 64738
+    },
+    {
+      "path": "data/eta/matrices/S03_Early_W.npz",
+      "sha256": "b08cddc8320d97b7dc051aa1f451bb4c58e9f63d06434ebb289b0125b5c0fe07",
+      "bytes": 39755
+    },
+    {
+      "path": "data/eta/matrices/S03_Late_W.npz",
+      "sha256": "0ddab3994382fb71854b673c3fda67cd16c6a44899016dd99244d04e8cb7e9bf",
+      "bytes": 40000
+    },
+    {
+      "path": "data/eta/matrices/S03_Mid_W.npz",
+      "sha256": "fc7aa1f4db7d712eb387de0713cebd287d567d73595a7216a0370964c7f1a08d",
+      "bytes": 26656
+    },
+    {
+      "path": "data/eta/matrices/S03_Post_W.npz",
+      "sha256": "bdd2a43a054d21b0761ee15285d2066ed96cdb912dcc155d82fb530956b6c549",
+      "bytes": 30404
+    },
+    {
+      "path": "data/eta/matrices/S03_Pre_W.npz",
+      "sha256": "29f4698e6b73f01a3e1a39d1404ca7aa3ffdab6eb83ab2171f6297ca7532f76b",
+      "bytes": 35079
+    },
+    {
+      "path": "data/eta/matrices/S04_Early_W.npz",
+      "sha256": "a9ef57dfb7b1ddd5372f8028897f71a68104c10f78658e41760698b47cda8189",
+      "bytes": 39535
+    },
+    {
+      "path": "data/eta/matrices/S04_Late_W.npz",
+      "sha256": "c5347b11de4be0af1a138d54e3a22091f0e76fa883e35e1d55a0b2d54c2e90df",
+      "bytes": 37007
+    },
+    {
+      "path": "data/eta/matrices/S04_Mid_W.npz",
+      "sha256": "3419baac96086f6a4d3370d3cba29f2fb850d0d010737bbd517ec1ad60f18027",
+      "bytes": 45746
+    },
+    {
+      "path": "data/eta/matrices/S04_Post_W.npz",
+      "sha256": "19da0e42d07beae2f77984c593e8490497fd4ec978a3cc470e9a6c83a1fbb127",
+      "bytes": 49294
+    },
+    {
+      "path": "data/eta/matrices/S04_Pre_W.npz",
+      "sha256": "522f757a5ac5dcd19fa2d9849e0fa0539d9f62fdfe60717458149929e80e6e8c",
+      "bytes": 39234
+    },
+    {
+      "path": "data/eta/matrices/S05_Early_W.npz",
+      "sha256": "83a6a2610549aeb75f706adfb0089e37b50bdb2e3a216ed53d574228cdf2de22",
+      "bytes": 31056
+    },
+    {
+      "path": "data/eta/matrices/S05_Late_W.npz",
+      "sha256": "2b2f604bda4b474ffba9dc3f8f4cdea4e0e88654004975f24c1d7b6c9652d70c",
+      "bytes": 45776
+    },
+    {
+      "path": "data/eta/matrices/S05_Mid_W.npz",
+      "sha256": "215270042916bbe4bda48d4ac0e58588ab67552dcaaaca53fd9ad9e649600bea",
+      "bytes": 34871
+    },
+    {
+      "path": "data/eta/matrices/S05_Post_W.npz",
+      "sha256": "e4b9b6c0cf1950bb438fda28ad8227d8dadf9f094a24b822ed51092bd9fda845",
+      "bytes": 53972
+    },
+    {
+      "path": "data/eta/matrices/S05_Pre_W.npz",
+      "sha256": "f792c8681532be6424a61d7bcdf6336cccf753ddaf942dcbc8af5220d1771e06",
+      "bytes": 52216
+    },
+    {
+      "path": "data/eta/matrices/S06_Early_W.npz",
+      "sha256": "879bc9aa3c80861dd9f5cff1279a2fdfa1c27d23a8294e7b5dd341124eb4f7e4",
+      "bytes": 9455
+    },
+    {
+      "path": "data/eta/matrices/S06_Late_W.npz",
+      "sha256": "9da1ca14e65d0483af23662be427831f2614c7d65c5c7056c26531e8d2e96c86",
+      "bytes": 9654
+    },
+    {
+      "path": "data/eta/matrices/S06_Mid_W.npz",
+      "sha256": "01f20515dd26562710cc6d3d119d7a7ab0cf0f3dfd8a409ec6f5481cf6bb7f1f",
+      "bytes": 10284
+    },
+    {
+      "path": "data/eta/matrices/S06_Post_W.npz",
+      "sha256": "b4a9dea6a8e22e34c00ff4925ac602bcf5be9b42a98cd42f48e67699e2336261",
+      "bytes": 12059
+    },
+    {
+      "path": "data/eta/matrices/S06_Pre_W.npz",
+      "sha256": "331ebcd412f76054a32a03069e2b5b51eca731686e3b21a3f12a9fe3b7e768fa",
+      "bytes": 8429
+    },
+    {
+      "path": "data/eta/matrices/S07_Early_W.npz",
+      "sha256": "12e60e96314c29dfae8d9056fa99a7027a0177976953f7afb47175ed457bda8b",
+      "bytes": 10586
+    },
+    {
+      "path": "data/eta/matrices/S07_Late_W.npz",
+      "sha256": "d3343e87371dab9c24f2f3f1216c557a92de22d72c9a6d939ca50c4eb205c1e9",
+      "bytes": 7600
+    },
+    {
+      "path": "data/eta/matrices/S07_Mid_W.npz",
+      "sha256": "f6bf3166e7c37135efbfd84a5f29d5512bc54d167c854c61fdd54bbe397b1b7b",
+      "bytes": 11615
+    },
+    {
+      "path": "data/eta/matrices/S07_Post_W.npz",
+      "sha256": "8f7267a530fe2b9928b2a41b286a9d74e71f980e0e9e1d601c1f3abbf8dacc16",
+      "bytes": 8829
+    },
+    {
+      "path": "data/eta/matrices/S07_Pre_W.npz",
+      "sha256": "e4f74eb4dfaac1cedf2d7448d363d2aaf899b9ef4c1a306f6501f54b20567e70",
+      "bytes": 6824
+    },
+    {
+      "path": "data/eta/matrices/S08_Early_W.npz",
+      "sha256": "25ace23844d2c19fc688761ccfd6d023fb69a17e74a8c6d72556bb948e6686ee",
+      "bytes": 10656
+    },
+    {
+      "path": "data/eta/matrices/S08_Late_W.npz",
+      "sha256": "451ffdefe8a87a20151770081f4678b309686d448439ce35382794232989744f",
+      "bytes": 10807
+    },
+    {
+      "path": "data/eta/matrices/S08_Mid_W.npz",
+      "sha256": "d803965956300e18ce0a48c958f95d6efcd00ecd24aa64abeb0300795daa06e8",
+      "bytes": 9549
+    },
+    {
+      "path": "data/eta/matrices/S08_Post_W.npz",
+      "sha256": "8f0a6b8967507fba1d1357de8f0565a6aa0a6f5e4f57939675798ac6e6c061aa",
+      "bytes": 11415
+    },
+    {
+      "path": "data/eta/matrices/S08_Pre_W.npz",
+      "sha256": "c49ca77d565c98a410aba949c7699772618584cfb7ee82042abf9f858fef695d",
+      "bytes": 8416
+    },
+    {
+      "path": "data/eta/matrices/S09_Early_W.npz",
+      "sha256": "e3f4b97804b32bb959657a35ade32e5673c2a585fb5d100876e7406c37f70561",
+      "bytes": 85022
+    },
+    {
+      "path": "data/eta/matrices/S09_Late_W.npz",
+      "sha256": "4e25be4f3a2a9958103235b71d6524d496e3b4adec6eb3773c61b471710f2493",
+      "bytes": 55867
+    },
+    {
+      "path": "data/eta/matrices/S09_Mid_W.npz",
+      "sha256": "11697bcd534112a9d91c16bd39d44a36cdc679f48c017bd9150e44755e5bf138",
+      "bytes": 44217
+    },
+    {
+      "path": "data/eta/matrices/S09_Post_W.npz",
+      "sha256": "6699ca9865e3b9c814fd7e3f2df871af5f87fd3f83a06001b48b402533c64081",
+      "bytes": 70135
+    },
+    {
+      "path": "data/eta/matrices/S09_Pre_W.npz",
+      "sha256": "6c653e871ae1027d1284c46311114ab97bf662b432442d39d9cec1028fdee13d",
+      "bytes": 59441
+    },
+    {
+      "path": "data/eta/matrices/S10_Early_W.npz",
+      "sha256": "deab5eec71447411e82541e1a528f7c1a900cde1302c9a6c911c47629439412c",
+      "bytes": 8336
+    },
+    {
+      "path": "data/eta/matrices/S10_Late_W.npz",
+      "sha256": "105f103dee312aad9bece265abb093a1390b676f33f1329eae25b6f7e8dd589b",
+      "bytes": 10263
+    },
+    {
+      "path": "data/eta/matrices/S10_Mid_W.npz",
+      "sha256": "f8bffe7711d98f0f9dcf468b79b83cf09c13d51905a4c0dad72c949bdbed5f23",
+      "bytes": 9988
+    },
+    {
+      "path": "data/eta/matrices/S10_Post_W.npz",
+      "sha256": "addb0242dd33baa2b4ec3221de904de44c2b9d1c7b9c164f6fe01774bcce78c6",
+      "bytes": 9430
+    },
+    {
+      "path": "data/eta/matrices/S10_Pre_W.npz",
+      "sha256": "28d39e43ed8aeb543dbd53907704a6773af77e4fb8ec888c02154b94f3975856",
+      "bytes": 10802
+    },
+    {
+      "path": "data/eta/matrices/S11_Early_W.npz",
+      "sha256": "5883f12f982f448cefa12011e71920a367fed2691e121eb3f5dd1590ab9486f3",
+      "bytes": 22030
+    },
+    {
+      "path": "data/eta/matrices/S11_Late_W.npz",
+      "sha256": "8406c5e72624b5f017acbb67e5742462db39af74cf56926e5d68a0b7d14b81cb",
+      "bytes": 27598
+    },
+    {
+      "path": "data/eta/matrices/S11_Mid_W.npz",
+      "sha256": "b16654ef4fd51292265ecfe606e808bde5be6fdbdd4cb1fffb91c8b8443daab6",
+      "bytes": 14212
+    },
+    {
+      "path": "data/eta/matrices/S11_Post_W.npz",
+      "sha256": "f3cdd83c67f73b0e005e7da7f55229e637a8ce16843b5a2a3f949c050891ea1b",
+      "bytes": 22889
+    },
+    {
+      "path": "data/eta/matrices/S11_Pre_W.npz",
+      "sha256": "d20197ea60f1ad32e1304e7491ec077247ec8296ce29a1933e0756148bcca8b8",
+      "bytes": 20342
+    },
+    {
+      "path": "data/eta/matrices/S12_Early_W.npz",
+      "sha256": "ff9141f10e936dc6badfe903bd3748d47eb55b6ac8e017cf685b4e34f9f5468d",
+      "bytes": 12416
+    },
+    {
+      "path": "data/eta/matrices/S12_Late_W.npz",
+      "sha256": "d223d56d88a4111f2a4245ee5a059d1fdf9e162805118eb178c0948115401815",
+      "bytes": 24106
+    },
+    {
+      "path": "data/eta/matrices/S12_Mid_W.npz",
+      "sha256": "c6b1e7a09001c4ce43f87a65efa5c64b04fe2f2fe9594ddb4e963d47b2751d8b",
+      "bytes": 24860
+    },
+    {
+      "path": "data/eta/matrices/S12_Post_W.npz",
+      "sha256": "ba4e1e99f0c1072262c4a0d9f450894f751fc59dba2b91110512d7e45c9b20f6",
+      "bytes": 24438
+    },
+    {
+      "path": "data/eta/matrices/S12_Pre_W.npz",
+      "sha256": "e234cfcafe0063af0ca7c5505243ae68bdba44cbb150e2cb4d2dcd65fb2859bb",
+      "bytes": 16473
+    },
+    {
+      "path": "data/eta/matrices/S13_Early_W.npz",
+      "sha256": "84e5e8faca770a07aaaa50f5c7158e799b5db9220454a66260866897bb1ad17b",
+      "bytes": 9016
+    },
+    {
+      "path": "data/eta/matrices/S13_Late_W.npz",
+      "sha256": "837a341ae50fb98fd1545fdcc03875f1d5de3cb81dfc4c6260b93de476fa39cb",
+      "bytes": 7880
+    },
+    {
+      "path": "data/eta/matrices/S13_Mid_W.npz",
+      "sha256": "4d43ebf63001195b1538462d517657ea3d201b07bd11cd96521753920a5c7a78",
+      "bytes": 6986
+    },
+    {
+      "path": "data/eta/matrices/S13_Post_W.npz",
+      "sha256": "b8c330c2c9609e336d9f435ef476768b650bff8de50525a9f3e2ffff00ab94df",
+      "bytes": 8573
+    },
+    {
+      "path": "data/eta/matrices/S13_Pre_W.npz",
+      "sha256": "a0b1dc0c6cf572168c129c60f9e5b99e999290e01d34907e25ca33f70d98055a",
+      "bytes": 9870
+    },
+    {
+      "path": "data/eta/matrices/S14_Early_W.npz",
+      "sha256": "85b9822d88c1c52671f0db856285f05420c6be8022a0ba4595f39e65b1dd9c67",
+      "bytes": 8108
+    },
+    {
+      "path": "data/eta/matrices/S14_Late_W.npz",
+      "sha256": "37bab0d6b68115c4dec182a85b8e4b4855792ae6b5b8f35a4e79c85fd8a13884",
+      "bytes": 6999
+    },
+    {
+      "path": "data/eta/matrices/S14_Mid_W.npz",
+      "sha256": "6b94321b7bf3fc81e326ad893b853dd89a76536ca19a306afdfb76bebc462a8f",
+      "bytes": 10502
+    },
+    {
+      "path": "data/eta/matrices/S14_Post_W.npz",
+      "sha256": "0b337e4213ed292040691d7fed561edb137fde62315a6de9c212b7680377cdb7",
+      "bytes": 10711
+    },
+    {
+      "path": "data/eta/matrices/S14_Pre_W.npz",
+      "sha256": "646d922427614dfd96a38b2f2d4867f5c1fd08bf57d2374d5d1aeec21d893729",
+      "bytes": 9138
+    },
+    {
+      "path": "data/eta/matrices/S15_Early_W.npz",
+      "sha256": "8a88fbe9a7b03e04bf9b885a62e12fcba346759791add7c35e6aaf1c89b7210b",
+      "bytes": 23984
+    },
+    {
+      "path": "data/eta/matrices/S15_Late_W.npz",
+      "sha256": "02dedaec583ac89d51ae040554700e29d28c4fb676565fbef5905798031b2869",
+      "bytes": 15355
+    },
+    {
+      "path": "data/eta/matrices/S15_Mid_W.npz",
+      "sha256": "5f9dfe79d842b1ebcb10bce79e75ef1d7c256140449bdcfd9140e3c4870150b8",
+      "bytes": 23803
+    },
+    {
+      "path": "data/eta/matrices/S15_Post_W.npz",
+      "sha256": "94901f5878d1301b3d7ebca918989c2d0ca47f8452ffdcd6579e03785d8cceca",
+      "bytes": 15591
+    },
+    {
+      "path": "data/eta/matrices/S15_Pre_W.npz",
+      "sha256": "1c84d90c87e3cc6272712cc44570d08a26fd961d0d7731ad5b7fe7679b6c5e52",
+      "bytes": 13743
+    },
+    {
+      "path": "data/eta/matrices/S16_Early_W.npz",
+      "sha256": "990afd82d54754eb6ce1bc44f3aa9adc4d00859fe5cbc6f39f4610ebed74a820",
+      "bytes": 4945
+    },
+    {
+      "path": "data/eta/matrices/S16_Late_W.npz",
+      "sha256": "77bb3ace7b08598c8c4b9cdce56c4e1641373b53be7a2454b213d1b1e8685641",
+      "bytes": 3900
+    },
+    {
+      "path": "data/eta/matrices/S16_Mid_W.npz",
+      "sha256": "99ccac811e623a6aea2733682a87a71bf83929abf87ad12dc1d0e0243d8ff8c7",
+      "bytes": 3845
+    },
+    {
+      "path": "data/eta/matrices/S16_Post_W.npz",
+      "sha256": "e0f4fd41bccf7b49d4e99ad201c3c80412886bcbb6d7d64abfa70bdba49a6b59",
+      "bytes": 3323
+    },
+    {
+      "path": "data/eta/matrices/S16_Pre_W.npz",
+      "sha256": "a87ddd18684cd66306fe51803b10461b4a2263365340c94245cb40d4d2bd9b9c",
+      "bytes": 3242
+    },
+    {
+      "path": "data/eta/matrices/S17_Early_W.npz",
+      "sha256": "e12cc70338d9b2ee3e471c23ca34e7343e07ea61f10e44dbae6cb3dbe44075d0",
+      "bytes": 22048
+    },
+    {
+      "path": "data/eta/matrices/S17_Late_W.npz",
+      "sha256": "b314bdc24807019dc53b3c48af9476d6ef1e1542c0fdaa0237e33e70a4003fdd",
+      "bytes": 55353
+    },
+    {
+      "path": "data/eta/matrices/S17_Mid_W.npz",
+      "sha256": "96eded23ae7aa6b3ee92bbaa60b4d3a52f0aed83ad2dcdf8aa2770efc9e78997",
+      "bytes": 34252
+    },
+    {
+      "path": "data/eta/matrices/S17_Post_W.npz",
+      "sha256": "c6b955611bea037172ead900da74aed2d1e156007bac353e3c1826cec46c3b0a",
+      "bytes": 35173
+    },
+    {
+      "path": "data/eta/matrices/S17_Pre_W.npz",
+      "sha256": "1cb193ba1fa2079777b0d51e9451a62d48e37ac037273465798605924c0e1fc8",
+      "bytes": 30697
+    },
+    {
+      "path": "data/eta/matrices/S18_Early_W.npz",
+      "sha256": "2da827827c3b70175cb5cb16354e8bacbc8afc8fc4f7e9498427ce10725f2cfc",
+      "bytes": 16694
+    },
+    {
+      "path": "data/eta/matrices/S18_Late_W.npz",
+      "sha256": "7bd6118b8c9196c91293214561ca453d9868677308e2b07e051301814a5ce21d",
+      "bytes": 19185
+    },
+    {
+      "path": "data/eta/matrices/S18_Mid_W.npz",
+      "sha256": "ca535519f3f369ccac9d58c2ff9d1323754dfbbf01b6bf509894a8962226e413",
+      "bytes": 17269
+    },
+    {
+      "path": "data/eta/matrices/S18_Post_W.npz",
+      "sha256": "71c42a3b0b7df23c511744ad5b70fc3b6078d465942a31bf778bae2bd14b597a",
+      "bytes": 15983
+    },
+    {
+      "path": "data/eta/matrices/S18_Pre_W.npz",
+      "sha256": "9654dd8cc131e38cd2c518085fe3e429969bbce54dfb94309a2c792c6f04872b",
+      "bytes": 15456
+    },
+    {
+      "path": "data/eta/matrices/S19_Early_W.npz",
+      "sha256": "ddff859cb5efd5203278235e6ceee851ef37473a1120122242deb56b1c62c898",
+      "bytes": 20986
+    },
+    {
+      "path": "data/eta/matrices/S19_Late_W.npz",
+      "sha256": "95bf80b645e2dbe6c8abe92aebe03340b4bd8ef66d123ac13e60bb8c28cff5f8",
+      "bytes": 22524
+    },
+    {
+      "path": "data/eta/matrices/S19_Mid_W.npz",
+      "sha256": "6172de1b4c67ea18b56eb068acdcf419e3cd0fa45da046d4b46e701082239803",
+      "bytes": 18746
+    },
+    {
+      "path": "data/eta/matrices/S19_Post_W.npz",
+      "sha256": "9facba83106567eb652196f50d4afebd996f6259fb02081c1923292df41d320b",
+      "bytes": 23072
+    },
+    {
+      "path": "data/eta/matrices/S19_Pre_W.npz",
+      "sha256": "fc9b7a575ed51ee7a5d2751068ce8e2211a8405d8b475dd122758c280e8e0d74",
+      "bytes": 26241
+    },
+    {
+      "path": "data/eta/matrices/S20_Early_W.npz",
+      "sha256": "068b2750b94492efa32333c6171345789ba41697d78204fa5cc4506858c90551",
+      "bytes": 22408
+    },
+    {
+      "path": "data/eta/matrices/S20_Late_W.npz",
+      "sha256": "763b39229f512d12df7ad2654a1ab71e2aa58baf365189dbf04be15b16aed02b",
+      "bytes": 15252
+    },
+    {
+      "path": "data/eta/matrices/S20_Mid_W.npz",
+      "sha256": "fc932838a9f37d04e557ec7292d7f6bcda1c45315e08cb0bbb67b6aec3041bef",
+      "bytes": 22353
+    },
+    {
+      "path": "data/eta/matrices/S20_Post_W.npz",
+      "sha256": "2db14135f8c7db36b57ee4f86f79a2f5c5a7fa3f3c3b42279093f62416cd3405",
+      "bytes": 24814
+    },
+    {
+      "path": "data/eta/matrices/S20_Pre_W.npz",
+      "sha256": "3f34cbf7f41d502492dabd2f6e03b4b4db3e7195f5f9ffc4437de1830b496659",
+      "bytes": 15449
+    },
+    {
+      "path": "data/eta/matrices/S21_Early_W.npz",
+      "sha256": "8295d104dbae280e6b5e28500ea8de6d0f1509eaed2ef5bbcf1926318ca512e3",
+      "bytes": 59686
+    },
+    {
+      "path": "data/eta/matrices/S21_Late_W.npz",
+      "sha256": "b81586758120feef5f815afd0d77c35165a840b928415b580ea0595a76b8224c",
+      "bytes": 40266
+    },
+    {
+      "path": "data/eta/matrices/S21_Mid_W.npz",
+      "sha256": "61542932aa4c9a249ee1cc43d4a0f6b90f24a9d413a82f009d139b33e3e6cf70",
+      "bytes": 34785
+    },
+    {
+      "path": "data/eta/matrices/S21_Post_W.npz",
+      "sha256": "7ced0d30ded75ebcc5b1c1b04e3d0959a42252d45e17355645868b0b7cef361e",
+      "bytes": 30376
+    },
+    {
+      "path": "data/eta/matrices/S21_Pre_W.npz",
+      "sha256": "6c8f9626b2a9c0280fcf49687c7e2d69f6f9ea25b1c8f6962d702935f8e3eaa5",
+      "bytes": 35970
+    },
+    {
+      "path": "data/eta/matrices/S22_Early_W.npz",
+      "sha256": "8b66cdc151febf6893426cb08a2148f3e260889aed4ba583498a0a6637a85b26",
+      "bytes": 35161
+    },
+    {
+      "path": "data/eta/matrices/S22_Late_W.npz",
+      "sha256": "30196d142260a735b11e0891757135ce666c5f28d0ab80a4fd358660ec6c863f",
+      "bytes": 39578
+    },
+    {
+      "path": "data/eta/matrices/S22_Mid_W.npz",
+      "sha256": "a3010fc5a350fde75ca9a96fc42b77cff2c81856ed2af7c116ad7af1ed08d3e4",
+      "bytes": 41946
+    },
+    {
+      "path": "data/eta/matrices/S22_Post_W.npz",
+      "sha256": "7928f35ca83acfb9915deb1c038abdebb9d9d521ccb9af20845732fbd04c6b06",
+      "bytes": 58941
+    },
+    {
+      "path": "data/eta/matrices/S22_Pre_W.npz",
+      "sha256": "efad2635883b786495ec3b4d250bf1fb550092c5a2a5c55fa618e0e642274b3a",
+      "bytes": 40301
+    },
+    {
+      "path": "data/eta/matrices/S23_Early_W.npz",
+      "sha256": "13b3320363932c798fa5dd8a225f9bad3eb741daa7c7ce65a6cb138191439078",
+      "bytes": 17815
+    },
+    {
+      "path": "data/eta/matrices/S23_Late_W.npz",
+      "sha256": "d6f09b2ba9f22072810e57ae431d4633e2bfae1e98b6e0513ca2505be7acb818",
+      "bytes": 12971
+    },
+    {
+      "path": "data/eta/matrices/S23_Mid_W.npz",
+      "sha256": "dd10b76fbbb703c9c7859bc8617d9691429359e0949045b2a67a10fdb4ea27a3",
+      "bytes": 15773
+    },
+    {
+      "path": "data/eta/matrices/S23_Post_W.npz",
+      "sha256": "5621eade4023e1d603408a815f030f1b88831b5322cc5b60f4177fac3b845e71",
+      "bytes": 20902
+    },
+    {
+      "path": "data/eta/matrices/S23_Pre_W.npz",
+      "sha256": "e2f7ac77be15cbbea16fc335cc460067f9b6e19994a30fc5e3ba20eb0360a213",
+      "bytes": 13452
+    },
+    {
+      "path": "data/eta/matrices/S24_Early_W.npz",
+      "sha256": "555eed8a561062ca8db85f052823bdc2f6203389218b756ce853780a2d6c6db2",
+      "bytes": 33278
+    },
+    {
+      "path": "data/eta/matrices/S24_Late_W.npz",
+      "sha256": "1271c75ee6814d6cc021f16089f5b52205c925ebb595c59d5c11d922a6ebaf30",
+      "bytes": 35704
+    },
+    {
+      "path": "data/eta/matrices/S24_Mid_W.npz",
+      "sha256": "dfdfca3c88a95d43a70f75a1b9ecb9159cc0df7c6a8d488e2c5052c4adfb6f67",
+      "bytes": 43867
+    },
+    {
+      "path": "data/eta/matrices/S24_Post_W.npz",
+      "sha256": "0b6ef45932088708106c86c2fcd3ad5f24de0d7f97548da113e3ff96aac3a3f9",
+      "bytes": 49349
+    },
+    {
+      "path": "data/eta/matrices/S24_Pre_W.npz",
+      "sha256": "1813b03dbd1bcd68ef2f5805ab2fd1e9e733798ce94cfb221e6badc4523e0167",
+      "bytes": 35128
+    }
+  ]
+}

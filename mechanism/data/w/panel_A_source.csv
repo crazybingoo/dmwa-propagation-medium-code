@@ -1,0 +1,13 @@
+network,state,group,members,mass,xpos
+toy_1,Triangle state,AB,AB,0,0.88
+toy_1,Triangle state,AC,AC,0,1.88
+toy_1,Triangle state,AD,AD,0,3.88
+toy_1,Triangle state,AE,AE,0,4.88
+toy_1,Triangle state,BC,BC,0,2.88
+toy_1,Triangle state,ABC,ABC,1,5.88
+toy_1,Edge states,AB,AB,0.3333333333333333,1.12
+toy_1,Edge states,AC,AC,0.3333333333333333,2.12
+toy_1,Edge states,AD,AD,0,4.12
+toy_1,Edge states,AE,AE,0,5.12
+toy_1,Edge states,BC,BC,0.3333333333333333,3.12
+toy_1,Edge states,ABC,ABC,0,6.12

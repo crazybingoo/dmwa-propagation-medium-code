@@ -202,7 +202,7 @@ write_csv(export_checks, file.path(base_dir, "Supplementary_Fig_2_postplot_expor
 
 legend_text <- paste(
   "Supplementary Fig. 2 | Seizure-level \u03b7 trajectories.",
-  "Window-resolved effective refractive index (\u03b7) trajectories are shown for all 24 seizures.",
+  "Window-resolved propagation medium parameter (\u03b7) trajectories are shown for all 24 seizures.",
   "Each panel denotes one seizure, with the x axis normalized to the window sequence of that recording.",
   "Line colour indicates the five seizure stages: pre-ictal, early ictal, mid-ictal, late ictal and post-ictal.",
   "Dashed grey lines mark the corresponding pre-ictal mean \u03b7 for each seizure.",

@@ -1,0 +1,13 @@
+{
+  "snapshot_date": "2026-09-17",
+  "documents": {
+    "Manuscript.docx": {
+      "sha256": "be0754b9265b07c95c17da871dea5935c7d3b69a20dd30323c9c375cbd5a1230",
+      "bytes": 6864838
+    },
+    "Supplementary Materials.docx": {
+      "sha256": "18c847b63d1f65fb43b7faa95256c7153ecc3db431d4cb42b7bcc8b794af375d",
+      "bytes": 11099113
+    }
+  }
+}

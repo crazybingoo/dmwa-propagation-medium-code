@@ -1,48 +1,80 @@
-# DMWA Propagation Medium Code and Source Data
+# DMWA propagation medium: code and source data
 
-This repository contains the current analysis and figure code for Fig. 2–Fig. 9 and Supplementary Fig. 1–Supplementary Fig. 4 of the manuscript on directed higher-order propagation-medium reorganization in epileptic seizures.
+Code and derived source data accompanying **Directed multi-order networks reveal resource–spectral rebalancing of the seizure propagation medium**.
+
+This version follows the manuscript and Supplementary Materials dated **17 September 2026**: **Figs. 1–7, Figs. S1–S8 and Tables S1–S3**. Document hashes are recorded in [the snapshot manifest](docs/manuscript_snapshot.json). The repository does not distribute the manuscript files.
+
+## Scientific scope
+
+Directed multi-order weighted adjacency (DMWA), denoted by `W`, represents structural coupling among overlapping regional groups. The propagation medium parameter is `eta = R / rho(W)`, where `R` is mean outgoing DMWA weight and `rho(W)` is the spectral radius. Across 24 seizures from 14 patients, mean coupling increased proportionally more than spectral radius, producing an ictal and postictal increase in eta.
+
+- **Fig. 6:** retaining group order and exact overlap degree recovers the projected response under the specified linear model. Typical node-only approximation errors were small; exact recovery is not necessarily dimensional compression.
+- **Fig. 7:** with uniform leakage and mean-weight normalization, eta sets the critical normalized feedback gain and asymptotic recovery scale. These are model relationships, not independent physiological predictions.
+
+The current term is **propagation medium parameter**, replacing the earlier effective-refractive-index analogy. Structural directionality does not imply causal neural transmission. Groups are pairs and closed triangles extracted from a thresholded pairwise PLV scaffold.
 
 ## Contents
 
-- `Source_Data.xlsx`: de-identified numerical source data underlying Fig. 2–Fig. 9, Supplementary Fig. 1–Supplementary Fig. 4 and Supplementary Tables 1–3. Each figure or table has one worksheet; figure panels are stacked as labelled data blocks within the corresponding figure worksheet.
-- `matlab/`: MATLAB scripts for the DMWA, control, robustness, representation-comparison and simulation analyses.
-- `r_figures/`: R scripts for the final manuscript and Supplementary Information figures.
+| Path | Contents |
+|---|---|
+| [Source_Data.xlsx](Source_Data.xlsx) | Panel data for Figs. 2–7 and S1–S8, updated Tables S1–S3, Data_Map and Data_Dictionary. Fig. 1 is a construction schematic. |
+| [docs/figure_map.md](docs/figure_map.md) | Current questions, source sheets, code entry points and numbering. |
+| [mechanism/](mechanism/) | Portable Python analyses, design records, CSVs and 120 de-identified derived DMWA matrices for Figs. 6–7. |
+| [r_figures/](r_figures/) | R scripts arranged by current figure number. |
+| [matlab/](matlab/) | Original empirical, control, ablation, robustness and simulation scripts. Historical directory names are mapped in the figure index. |
 
-The workbook contains a `README`, a figure/table-to-range `Data_Map`, and a panel-aware `Data_Dictionary`. Analysis units are stated explicitly because they differ across panels and tables.
+## Reproduce the added mechanism analyses
 
-## Final R figure scripts
+Use Python 3.11 or later:
 
-The final figure versions use 10.5-pt main text and 12.5-pt panel labels.
+```bash
+python -m pip install -r mechanism/requirements.txt
+python mechanism/code/w_mechanism_analysis.py
+python mechanism/code/eta_response_analysis.py
+```
 
-- Fig. 2: `r_figures/Fig_2/make_fig2_effective_refractive_index_redraw_font10p5_label12p5_review.R`
-- Fig. 3: run `r_figures/Fig_3/render_fig3_delta_log_notation.R`
-- Fig. 4: run `r_figures/Fig_4/render_fig4_control_label_nouns.R`
-- Fig. 5: `r_figures/Fig_5/make_fig5_eta_burden_font10p5_label12p5_legends_below.R`
-- Fig. 6: run `r_figures/Fig_6/render_fig6_retained_fraction_d_title_bold.R`
-- Fig. 7: run `r_figures/Fig_7/render_fig7c_degree_bias_spacing.R`
-- Fig. 8: run `r_figures/Fig_8/render_fig8c_order_labels.R`
-- Fig. 9: `r_figures/Fig_9/draw_fig9_hr_mechanism_final.R`
+The W script regenerates the 100 formal scaffolds and three illustrative examples for Fig. 6. The eta script regenerates the synthetic examples and all 360 responses from the 120 supplied matrices. No raw SEEG or private MATLAB cache is required. For a short synthetic demonstration:
 
-The Supplementary Fig. 1–4 scripts are located in the corresponding `r_figures/Supplementary_Fig_*` directories.
+```bash
+python mechanism/code/eta_response_analysis.py --examples-only
+```
 
-Scripts resolve their own directory by default. Approved users can override input/output locations with the environment variables documented in each script, such as `FIG2_DATA_DIR`, `FIG5_DATA_DIR`, `FIG8_SOURCE_DIR`, or `FIG9_SOURCE_DIR`. No personal workstation paths are embedded in the public code.
+By default, scripts replace derived results within `mechanism/data/` and write diagnostics to `mechanism/reports/`. Set `DMWA_OUTPUT_ROOT` to a separate directory to preserve distributed results. `DMWA_INPUT_DIR` can select another folder containing the Fig. 7 selection table and `matrices/`. See [mechanism/README.md](mechanism/README.md) for equations, settings and units.
 
-## Data availability and privacy boundary
+## Draw the current Figs. 6 and 7
 
-`Source_Data.xlsx` contains only de-identified, derived numerical values used for the figures, statistical summaries and Supplementary Tables. Seizures are labelled `Seizure 01`–`Seizure 24`, and patients are labelled `P01`–`P14` or `P1`–`P14` according to the reporting context. The private linkage keys are not included.
+Plotting reads the included CSVs; rerunning simulations is optional.
 
-The repository intentionally excludes:
+```r
+install.packages(c("ggplot2", "patchwork", "dplyr", "tidyr", "readr",
+                   "ggtext", "svglite", "ragg", "jsonlite"))
+```
 
-- raw or preprocessed SEEG recordings;
-- participant names, clinical identifiers, recording dates and electrode labels;
-- internal case codes and patient-linkage tables;
-- local absolute file paths and workstation-specific information;
-- intermediate files that could reconnect public labels to private clinical records.
+```bash
+Rscript r_figures/Fig_6/make_fig6_group_context.R
+Rscript r_figures/Fig_7/make_fig7_feedback_response.R
+```
 
-The raw SEEG recordings are human-participant clinical neurophysiology data and are not publicly redistributable through GitHub because of participant privacy, ethics approval, consent terms and clinical data-use restrictions. Access, when permissible, requires review through the responsible clinical institution, appropriate ethics approval and a data-use agreement.
+Use patchwork 1.3.0 or later, including `free()`. Outputs are SVG, PDF, 600-dpi PNG/TIFF and a 300-dpi preview under `outputs/Fig_6/` and `outputs/Fig_7/`. Arial matches the manuscript; font substitution can alter spacing. Scripts preserve the latest Fig. 6D and Fig. 7 layouts. Input overrides are `DMWA_W_DATA_DIR` and `DMWA_ETA_DATA_DIR`; output overrides are `DMWA_FIG6_OUT` and `DMWA_FIG7_OUT`.
 
-For journal submission, `Source_Data.xlsx` should also be uploaded as the manuscript's formal Source Data file; the GitHub copy is a versioned public mirror and does not replace the journal upload.
+Older R scripts are retained as analysis/plotting provenance, with current folder numbering. Some require analysis-specific CSV or MATLAB intermediates that are not distributed. Their historical filenames and environment-variable prefixes remain unchanged. **Source_Data.xlsx supplies the public panel-level values; it is not a drop-in replacement for every legacy input file.** Install openpyxl and run `python tools/extract_source_data.py` to extract its source blocks. Fig. 1 has no numerical plotting script.
 
-## Analysis notes
+## Analysis units and interpretation
 
-For the main empirical DMWA construction, one PLV threshold is selected per seizure from the elbow of its density–threshold curve and applied to all windows from the same seizure. The Fig. 6 robustness analysis uses 50 settings spanning window lengths from 1 to 5 s and retained PLV edge fractions from 0.45 to 0.90.
+- Primary inference for the eta stage effect uses **14 patient-level averages** (Fig. S2), each formed by equally averaging that patient's seizure-stage estimates. The 24 seizure-level summaries in Figs. 2–5 are exploratory.
+- Fig. 3 uses arithmetic stage means. Component bars describe log changes in the ratio of stage-mean R to stage-mean spectral radius; the eta points are separately averaged. These summaries need not obey the window-level log identity. Panels B–D use 100 times log changes.
+- Fig. S6 AUC uses seizure-level stage summaries; Fig. S7 AUC uses windows. Both describe within-cohort discrimination, without patient-held-out validation.
+- Fig. S5 contains 50 descriptive sensitivity settings; P values are unadjusted across settings.
+- Fig. 5 burden is an eigen-sensitivity descriptor, not a deletion effect or causal propagation contribution.
+- Fig. S8 does not establish a monotonic eta response to increasing simulated epileptiform drive.
+- Eta is invariant to uniform scaling and transposition, with no universal upper bound of one. Its threshold interpretation requires the specified leakage and normalization.
+
+## Data availability
+
+The repository contains de-identified derived values and group-coupling matrices. Mechanism identifiers `S01`–`S24` and `P01`–`P14` correspond to Table S1 with zero padding. Patient labels were harmonized without changing seizure grouping or numerical values.
+
+Raw/preprocessed SEEG, recording dates, electrode labels, names, private clinical identifiers and private linkage keys are excluded. Access to raw recordings, where permissible, requires review by the responsible clinical institution and appropriate ethics and data-use arrangements.
+
+The journal Source Data file should use the same version. This workbook is a versioned public mirror, not a substitute for the journal upload.
+
+See [CHANGELOG.md](CHANGELOG.md) and [validation.md](docs/validation.md) for this update and the checks performed.
